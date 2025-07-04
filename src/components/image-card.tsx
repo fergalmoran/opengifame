@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowUp, ArrowDown, MessageCircle, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns';
 
 interface ImageCardProps {
   id: string;
@@ -44,6 +45,21 @@ export function ImageCard({
   const { data: session } = useSession();
   const [currentVote, setCurrentVote] = useState(userVote);
   const [voteCount, setVoteCount] = useState({ upvotes, downvotes });
+
+  const formatHumanDate = (date: Date) => {
+    const now = new Date();
+    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (isToday(date)) {
+      return formatDistanceToNow(date, { addSuffix: true });
+    } else if (isYesterday(date)) {
+      return 'yesterday';
+    } else if (diffInDays < 7) {
+      return formatDistanceToNow(date, { addSuffix: true });
+    } else {
+      return format(date, 'MMM d, yyyy');
+    }
+  };
 
   const handleVote = async (voteType: 'up' | 'down') => {
     if (!session) return;
@@ -135,7 +151,7 @@ export function ImageCard({
         <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center space-x-1">
             <Calendar className="h-3 w-3" />
-            <span>{createdAt.toLocaleDateString()}</span>
+            <span>{formatHumanDate(createdAt)}</span>
           </div>
           <span>by {uploadedBy.name}</span>
         </div>

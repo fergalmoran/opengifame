@@ -57,13 +57,15 @@ export function Comments({ imageId, initialComments }: CommentsProps) {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    // Use a consistent format that works on both server and client
+    return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    });
+      timeZone: 'UTC', // Force UTC to ensure consistency
+    }).format(date);
   };
 
   return (
