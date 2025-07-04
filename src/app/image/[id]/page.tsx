@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
-import { images, users, comments } from '@/lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { images, users, comments, votes } from '@/lib/db/schema';
+import { eq, desc, and } from 'drizzle-orm';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Comments } from '@/components/comments';
 import { EditableTitle } from '@/components/editable-title';
+import { VotingButtons } from '@/components/voting-buttons';
+import { getServerAuthSession } from '@/lib/server-auth';
 
 interface ImagePageProps {
   params: {
@@ -14,6 +16,8 @@ interface ImagePageProps {
 
 export default async function ImagePage({ params }: ImagePageProps) {
   try {
+    const session = await getServerAuthSession();
+    
     const imageResult = await db
       .select({
         id: images.id,
@@ -38,6 +42,22 @@ export default async function ImagePage({ params }: ImagePageProps) {
     }
 
     const image = imageResult[0];
+
+    // Get user's current vote if authenticated
+    let userVote: 'up' | 'down' | null = null;
+    if (session?.user?.id) {
+      const userVoteResult = await db
+        .select({
+          isUpvote: votes.isUpvote,
+        })
+        .from(votes)
+        .where(and(eq(votes.imageId, params.id), eq(votes.userId, session.user.id)))
+        .limit(1);
+
+      if (userVoteResult.length > 0) {
+        userVote = userVoteResult[0].isUpvote ? 'up' : 'down';
+      }
+    }
 
     // Fetch comments for this image
     const imageComments = await db
@@ -64,15 +84,28 @@ export default async function ImagePage({ params }: ImagePageProps) {
             />
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Image Display */}
-            <div className="text-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={image.url}
-                alt={image.title || 'Uploaded image'}
-                className="max-w-full h-auto rounded-lg shadow-lg mx-auto"
-                style={{ maxHeight: '80vh' }}
-              />
+            {/* Image Display with Voting Buttons */}
+            <div className="flex items-start gap-6">
+              {/* Voting Buttons - Left Side */}
+              <div className="flex flex-col items-center space-y-2 pt-4">
+                <VotingButtons
+                  imageId={params.id}
+                  initialUpvotes={image.upvotes}
+                  initialDownvotes={image.downvotes}
+                  initialUserVote={userVote}
+                />
+              </div>
+              
+              {/* Image - Center */}
+              <div className="flex-1 text-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image.url}
+                  alt={image.title || 'Uploaded image'}
+                  className="max-w-full h-auto rounded-lg shadow-lg mx-auto"
+                  style={{ maxHeight: '80vh' }}
+                />
+              </div>
             </div>
 
             {/* Description */}
@@ -82,12 +115,6 @@ export default async function ImagePage({ params }: ImagePageProps) {
                 <p className="text-muted-foreground">{image.description}</p>
               </div>
             )}
-
-            {/* Vote counts */}
-            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <span>👍 {image.upvotes} upvotes</span>
-              <span>👎 {image.downvotes} downvotes</span>
-            </div>
 
             {/* Comments Section */}
             <div className="border-t pt-6">
