@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 import { images, tags, imageTags } from '@/lib/db/schema';
 import { writeFile, mkdir } from 'fs/promises';
@@ -8,10 +9,16 @@ import { eq } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    console.log('Upload API called');
+    const session = await getServerSession(authOptions);
+    console.log('Session:', session);
+    
     if (!session?.user?.id) {
+      console.log('No session or user ID found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    console.log('User ID:', session.user.id);
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
@@ -19,8 +26,11 @@ export async function POST(request: NextRequest) {
     const description = formData.get('description') as string;
     const tagsInput = formData.get('tags') as string;
 
-    if (!file || !title) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    console.log('Processing file:', file?.name);
+    console.log('Form data - Title:', title, 'Description:', description, 'Tags:', tagsInput);
+
+    if (!file) {
+      return NextResponse.json({ error: 'Missing file' }, { status: 400 });
     }
 
     // Validate file type
@@ -43,11 +53,13 @@ export async function POST(request: NextRequest) {
     await writeFile(filepath, Buffer.from(bytes));
 
     // Create image record
+    console.log('Creating image record in database...');
     const imageUrl = `/uploads/${filename}`;
+    const imageTitle = title || file.name.split('.')[0]; // Use filename without extension as fallback
     const [newImage] = await db
       .insert(images)
       .values({
-        title,
+        title: imageTitle,
         description: description || null,
         filename,
         originalName: file.name,
@@ -57,6 +69,8 @@ export async function POST(request: NextRequest) {
         uploadedBy: session.user.id,
       })
       .returning();
+
+    console.log('Image created with ID:', newImage.id);
 
     // Process tags
     if (tagsInput) {

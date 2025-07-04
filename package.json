@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_ENV=development next dev -p 3002 --turbo & local-ssl-proxy --config ./ssl-proxy.json",
+    "dev:plain": "next dev --turbo",
     "dev:ssl": "NODE_ENV=development next dev -p 3002 --turbo & local-ssl-proxy --config ./ssl-proxy.json",
     "build": "next build",
     "start": "next start",

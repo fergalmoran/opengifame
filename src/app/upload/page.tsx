@@ -1,4 +1,4 @@
-import Image from 'next/image';
+'use client';
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -14,7 +14,8 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [tags, setTags] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -43,16 +44,40 @@ export default function UploadPage() {
     }
   };
 
+  const addTag = (tagText: string) => {
+    const trimmedTag = tagText.trim().toLowerCase();
+    if (trimmedTag && !tags.includes(trimmedTag)) {
+      setTags([...tags, trimmedTag]);
+    }
+    setTagInput('');
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (tagInput.trim()) {
+        addTag(tagInput);
+      }
+    } else if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
+      // Remove last tag if input is empty and backspace is pressed
+      removeTag(tags[tags.length - 1]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file || !title) return;
+    if (!file) return;
 
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('tags', tags);
+    formData.append('tags', tags.join(','));
 
     try {
       const response = await fetch('/api/images/upload', {
@@ -76,21 +101,49 @@ export default function UploadPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Upload className="h-6 w-6" />
-            <span>Upload Image</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Choose Image
-              </label>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                {preview ? (
+      {!preview ? (
+        // Image upload only - before file selection
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">Share Your Image</h1>
+            <p className="text-muted-foreground">Upload an image to get started</p>
+          </div>
+          
+          <Card className="border-dashed border-2 border-muted-foreground/25">
+            <CardContent className="p-12">
+              <div className="text-center relative">
+                <Upload className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+                <h3 className="text-xl font-semibold mb-2">Choose an image to upload</h3>
+                <p className="text-muted-foreground mb-6">
+                  Drag and drop your image here, or click to browse
+                </p>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  required
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        // Full form - after file selection
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Upload className="h-6 w-6" />
+              <span>Upload Image</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Image Preview
+                </label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center relative">
                   <div className="relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -106,81 +159,93 @@ export default function UploadPage() {
                       onClick={() => {
                         setFile(null);
                         setPreview(null);
+                        setTags([]);
+                        setTagInput('');
                       }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
-                ) : (
-                  <div>
-                    <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-muted-foreground">
-                      Click to select an image or drag and drop
-                    </p>
-                  </div>
-                )}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium mb-2">
+                  Title
+                </label>
                 <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="mt-4"
-                  required
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter image title (optional)"
                 />
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium mb-2">
-                Title *
-              </label>
-              <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter image title"
-                required
-              />
-            </div>
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium mb-2">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter image description (optional)"
+                  className="w-full p-3 border border-input rounded-md bg-background"
+                  rows={3}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium mb-2">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter image description (optional)"
-                className="w-full p-3 border border-input rounded-md bg-background"
-                rows={3}
-              />
-            </div>
+              <div>
+                <label htmlFor="tags" className="block text-sm font-medium mb-2">
+                  Tags
+                </label>
+                <div className="space-y-2">
+                  {/* Tag badges */}
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border"
+                        >
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => removeTag(tag)}
+                            className="ml-1.5 h-3 w-3 rounded-full inline-flex items-center justify-center hover:bg-primary/20"
+                          >
+                            <X className="h-2 w-2" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Tag input */}
+                  <Input
+                    id="tags"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagInputKeyDown}
+                    placeholder="Type a tag and press Enter"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Press Enter to add tags. Use backspace to remove the last tag.
+                  </p>
+                </div>
+              </div>
 
-            <div>
-              <label htmlFor="tags" className="block text-sm font-medium mb-2">
-                Tags
-              </label>
-              <Input
-                id="tags"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="Enter tags separated by commas (e.g., nature, landscape, sunset)"
-              />
-              <p className="text-sm text-muted-foreground mt-1">
-                Separate tags with commas. New tags will be created automatically.
-              </p>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={!file || !title || uploading}
-            >
-              {uploading ? 'Uploading...' : 'Upload Image'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!file || uploading}
+              >
+                {uploading ? 'Uploading...' : 'Upload Image'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

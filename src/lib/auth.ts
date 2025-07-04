@@ -1,14 +1,14 @@
 import { NextAuthOptions } from 'next-auth';
-// import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-// import { db } from '@/lib/db';
+import { db } from '@/lib/db';
 
 export const authOptions: NextAuthOptions = {
-  // adapter: DrizzleAdapter(db), // Temporarily disabled until database is set up
+  adapter: DrizzleAdapter(db),
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -46,9 +46,9 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
   },
   callbacks: {
-    session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
+    session({ session, user }) {
+      if (session.user && user) {
+        session.user.id = user.id;
       }
       return session;
     },
