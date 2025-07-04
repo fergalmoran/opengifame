@@ -1,74 +1,50 @@
-import { Inknut_Antiqua as font } from "next/font/google";
-import "@/styles/globals.css";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { AuthProvider } from '@/components/auth-provider';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Header } from '@/components/header';
 
-import { type Metadata, type Viewport } from "next";
-
-import { TRPCReactProvider } from "@/trpc/react";
-import { cn } from "@/lib/utils";
-import { ThemeProvider } from "next-themes";
-import { TailwindIndicator } from "@/components/tailwind-indicator";
-import { Toaster } from "@/components/ui/toaster";
-import React from "react";
-import TopNavbar from "@/components/navbar/top-navbar";
-import { dashboardConfig } from "@/config/top-nav.config";
-import { siteConfig } from "@/config/site.config";
-import { getServerSession } from "next-auth";
-import { SessionProvider } from "next-auth/react";
-import { ClipboardListener } from "@/components/clipboard-listener";
-import {
-  ClipboardContext,
-  ClipboardProvider,
-} from "@/lib/clipboard/clipboard-context";
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-};
-const f = font({
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["400"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Open Gifame",
-  description: siteConfig.description,
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  title: "OpenGifame - Share and Discover Images",
+  description: "An open-source image sharing platform similar to Imgur",
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+    ]
+  },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-  const session = await getServerSession();
-
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>Open Gifame</title>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/manifest.webmanifest" />
-      </head>
       <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          f.className,
-        )}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TRPCReactProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ClipboardProvider>
-              <ClipboardListener />
-              <Toaster />
-              <TailwindIndicator />
-
-              <TopNavbar items={dashboardConfig.mainNav} session={session} />
-              <main className="m-4">{children}</main>
-            </ClipboardProvider>
-          </ThemeProvider>
-        </TRPCReactProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Header />
+            <main>{children}</main>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

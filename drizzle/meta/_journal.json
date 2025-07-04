@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1726870110731,
-      "tag": "0000_windy_wrecking_crew",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1726870450874,
-      "tag": "0001_warm_jimmy_woo",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726870854367,
-      "tag": "0002_sloppy_starfox",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1727802113532,
-      "tag": "0003_mean_thing",
+      "when": 1751648196867,
+      "tag": "0000_worried_blade",
       "breakpoints": true
     }
   ]

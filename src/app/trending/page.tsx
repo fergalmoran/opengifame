@@ -1,14 +1,13 @@
+import { db } from '@/lib/db';
+import { images, users, imageTags, tags, votes, comments } from '@/lib/db/schema';
+import { desc, sql, eq, inArray } from 'drizzle-orm';
 import { ImageCard } from '@/components/image-card';
-import { getServerAuthSession } from '@/lib/server-auth';
+import { auth } from '@/lib/auth';
 
-export default async function Home() {
-  // Temporarily disable database queries to test basic functionality
-  const session = await getServerAuthSession();
-  
-  /*
+export default async function TrendingPage() {
   const session = await auth();
   
-  // Get images with related data
+  // Get trending images based on score (upvotes - downvotes) and recent activity
   const imagesData = await db
     .select({
       id: images.id,
@@ -22,10 +21,12 @@ export default async function Home() {
         name: users.name,
         image: users.image,
       },
+      score: sql<number>`${images.upvotes} - ${images.downvotes}`,
     })
     .from(images)
     .leftJoin(users, eq(images.uploadedBy, users.id))
-    .orderBy(desc(images.createdAt))
+    .where(sql`${images.createdAt} > NOW() - INTERVAL '30 days'`) // Only images from last 30 days
+    .orderBy(desc(sql`${images.upvotes} - ${images.downvotes}`), desc(images.createdAt))
     .limit(20);
 
   // Get tags for each image
@@ -59,9 +60,7 @@ export default async function Home() {
         isUpvote: votes.isUpvote,
       })
       .from(votes)
-      .where(
-        eq(votes.userId, session.user.id)
-      );
+      .where(eq(votes.userId, session.user.id));
     
     const filteredVotes = userVotesData.filter(vote => imageIds.includes(vote.imageId));
     
@@ -97,23 +96,17 @@ export default async function Home() {
     }
     return acc;
   }, {});
-  */
-
-  // Temporary mock data for testing
-  const imagesData: never[] = [];
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Latest Images</h1>
+        <h1 className="text-3xl font-bold">Trending Images</h1>
         <p className="text-muted-foreground">
-          Discover and share amazing images with the community
+          The hottest images from the last 30 days based on community votes
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Temporarily disabled while fixing auth issues */}
-        {/*
         {imagesData.map((image) => (
           <ImageCard
             key={image.id}
@@ -133,16 +126,12 @@ export default async function Home() {
             commentCount={commentCountMap[image.id] || 0}
           />
         ))}
-        */}
       </div>
 
       {imagesData.length === 0 && (
         <div className="text-center py-12">
           <p className="text-lg text-muted-foreground">
-            No images uploaded yet. Be the first to share!
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            Database setup required - please configure your PostgreSQL database first.
+            No trending images found. Check back later!
           </p>
         </div>
       )}
