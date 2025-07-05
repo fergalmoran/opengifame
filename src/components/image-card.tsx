@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScoreDisplay } from '@/components/ui/stats-display';
 import { ArrowUp, ArrowDown, MessageCircle, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -84,18 +86,16 @@ export function ImageCard({
   const score = voteCount.upvotes - voteCount.downvotes;
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden funky-card hover-lift glass-effect border-border/50 transition-all duration-300 hover:border-purple-500/30">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <Link
             href={`/image/${id}`}
-            className="text-lg font-semibold hover:text-primary"
+            className="text-lg font-semibold hover:text-primary transition-colors duration-200 gradient-text"
           >
             {title}
           </Link>
-          <span className="text-sm text-muted-foreground">
-            {score > 0 ? `+${score}` : score}
-          </span>
+          <ScoreDisplay score={score} size="sm" animated />
         </div>
         {description && (
           <p className="text-sm text-muted-foreground">{description}</p>
@@ -104,13 +104,15 @@ export function ImageCard({
 
       <CardContent className="p-0">
         <Link href={`/image/${id}`}>
-          <div className="relative aspect-video w-full overflow-hidden">
+          <div className="relative aspect-video w-full overflow-hidden group">
             <Image
               src={url}
               alt={title}
               fill
-              className="object-cover transition-transform hover:scale-105"
+              className="object-cover transition-all duration-500 group-hover:scale-110"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-purple-500/50 transition-colors duration-300" />
           </div>
         </Link>
       </CardContent>
@@ -123,6 +125,11 @@ export function ImageCard({
               size="sm"
               onClick={() => handleVote('up')}
               disabled={!session}
+              className={`hover-lift transition-all duration-200 ${
+                currentVote === 'up' 
+                  ? 'bg-green-500 hover:bg-green-600 text-white neon-glow' 
+                  : 'hover:bg-green-50 hover:text-green-600 hover:border-green-300 dark:hover:bg-green-900/30'
+              }`}
             >
               <ArrowUp className="h-4 w-4" />
               {voteCount.upvotes}
@@ -132,6 +139,11 @@ export function ImageCard({
               size="sm"
               onClick={() => handleVote('down')}
               disabled={!session}
+              className={`hover-lift transition-all duration-200 ${
+                currentVote === 'down' 
+                  ? 'bg-red-500 hover:bg-red-600 text-white neon-glow' 
+                  : 'hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-900/30'
+              }`}
             >
               <ArrowDown className="h-4 w-4" />
               {voteCount.downvotes}
@@ -139,7 +151,7 @@ export function ImageCard({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" asChild className="hover-lift hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-900/30">
               <Link href={`/image/${id}`}>
                 <MessageCircle className="mr-1 h-4 w-4" />
                 {commentCount}
@@ -153,19 +165,22 @@ export function ImageCard({
             <Calendar className="h-3 w-3" />
             <span>{formatHumanDate(createdAt)}</span>
           </div>
-          <span>by {uploadedBy.name}</span>
+          <span className="font-medium">by {uploadedBy.name}</span>
         </div>
 
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {tags.map((tag) => (
-              <Link
+            {tags.map((tag, index) => (
+              <Badge
                 key={tag.id}
+                variant="funky"
+                size="sm"
                 href={`/tag/${tag.name}`}
-                className="rounded-full bg-secondary px-2 py-1 text-xs hover:bg-secondary/80"
+                animated
+                className={`stagger-${Math.min(index + 1, 5)}`}
               >
                 #{tag.name}
-              </Link>
+              </Badge>
             ))}
           </div>
         )}
