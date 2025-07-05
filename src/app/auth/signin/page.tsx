@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn, getProviders } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ interface Provider {
   callbackUrl: string;
 }
 
-export default function SignInPage() {
+function SignInForm() {
   const [providers, setProviders] = useState<Record<string, Provider> | null>(null);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -202,5 +202,31 @@ export default function SignInPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function SignInPageFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+          <p className="text-muted-foreground">
+            Sign in to your OpenGifame account
+          </p>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<SignInPageFallback />}>
+      <SignInForm />
+    </Suspense>
   );
 }

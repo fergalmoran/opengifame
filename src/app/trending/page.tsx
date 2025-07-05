@@ -1,12 +1,19 @@
-import { db } from '@/lib/db';
-import { images, users, imageTags, tags, votes, comments } from '@/lib/db/schema';
-import { desc, sql, eq, inArray } from 'drizzle-orm';
-import { ImageCard } from '@/components/image-card';
-import { auth } from '@/lib/auth';
-
+import { db } from "@/lib/db";
+import {
+  images,
+  users,
+  imageTags,
+  tags,
+  votes,
+  comments,
+} from "@/lib/db/schema";
+import { desc, sql, eq, inArray } from "drizzle-orm";
+import { ImageCard } from "@/components/image-card";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 export default async function TrendingPage() {
-  const session = await auth();
-  
+  const session = await getServerSession(authOptions);
+
   // Get trending images based on score (upvotes - downvotes) and recent activity
   const imagesData = await db
     .select({
@@ -26,17 +33,20 @@ export default async function TrendingPage() {
     .from(images)
     .leftJoin(users, eq(images.uploadedBy, users.id))
     .where(sql`${images.createdAt} > NOW() - INTERVAL '30 days'`) // Only images from last 30 days
-    .orderBy(desc(sql`${images.upvotes} - ${images.downvotes}`), desc(images.createdAt))
+    .orderBy(
+      desc(sql`${images.upvotes} - ${images.downvotes}`),
+      desc(images.createdAt)
+    )
     .limit(20);
 
   // Get tags for each image
-  const imageIds = imagesData.map(img => img.id);
-  
+  const imageIds = imagesData.map((img) => img.id);
+
   let imageTags_data: Array<{
     imageId: string;
     tag: { id: string; name: string } | null;
   }> = [];
-  
+
   if (imageIds.length > 0) {
     imageTags_data = await db
       .select({
@@ -52,7 +62,7 @@ export default async function TrendingPage() {
   }
 
   // Get user votes if logged in
-  let userVotes: Record<string, 'up' | 'down'> = {};
+  let userVotes: Record<string, "up" | "down"> = {};
   if (session?.user?.id && imageIds.length > 0) {
     const userVotesData = await db
       .select({
@@ -61,13 +71,21 @@ export default async function TrendingPage() {
       })
       .from(votes)
       .where(eq(votes.userId, session.user.id));
-    
-    const filteredVotes = userVotesData.filter(vote => imageIds.includes(vote.imageId));
-    
-    userVotes = filteredVotes.reduce((acc: Record<string, 'up' | 'down'>, vote: { imageId: string; isUpvote: boolean }) => {
-      acc[vote.imageId] = vote.isUpvote ? 'up' : 'down';
-      return acc;
-    }, {});
+
+    const filteredVotes = userVotesData.filter((vote) =>
+      imageIds.includes(vote.imageId)
+    );
+
+    userVotes = filteredVotes.reduce(
+      (
+        acc: Record<string, "up" | "down">,
+        vote: { imageId: string; isUpvote: boolean }
+      ) => {
+        acc[vote.imageId] = vote.isUpvote ? "up" : "down";
+        return acc;
+      },
+      {}
+    );
   }
 
   // Get comment counts
@@ -83,19 +101,28 @@ export default async function TrendingPage() {
       .groupBy(comments.imageId);
   }
 
-  const commentCountMap = commentCounts.reduce((acc: Record<string, number>, { imageId, count }: { imageId: string; count: number }) => {
-    acc[imageId] = count;
-    return acc;
-  }, {});
+  const commentCountMap = commentCounts.reduce(
+    (
+      acc: Record<string, number>,
+      { imageId, count }: { imageId: string; count: number }
+    ) => {
+      acc[imageId] = count;
+      return acc;
+    },
+    {}
+  );
 
   // Group tags by image
-  const tagsByImage = imageTags_data.reduce((acc: Record<string, Array<{ id: string; name: string }>>, item) => {
-    if (!acc[item.imageId]) acc[item.imageId] = [];
-    if (item.tag) {
-      acc[item.imageId].push(item.tag);
-    }
-    return acc;
-  }, {});
+  const tagsByImage = imageTags_data.reduce(
+    (acc: Record<string, Array<{ id: string; name: string }>>, item) => {
+      if (!acc[item.imageId]) acc[item.imageId] = [];
+      if (item.tag) {
+        acc[item.imageId].push(item.tag);
+      }
+      return acc;
+    },
+    {}
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -9,3 +9,5 @@
 8. When writing tests, use the same naming conventions as the components.
 9. Always check for existing issues or discussions before creating new ones.
 10. When generating new components, make sure to follow the project's existing tailwind/shadcn styles and include light & dark mode support.
+
+When I say "commit and push", it means to stage all changes, commit with a message, and push to the current branch. Use `git add .`, `git commit -m "your message"`, and `git push`.
