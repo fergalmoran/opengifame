@@ -94,6 +94,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
                   initialUpvotes={image.upvotes}
                   initialDownvotes={image.downvotes}
                   initialUserVote={userVote}
+                  layout="vertical"
                 />
               </div>
               
