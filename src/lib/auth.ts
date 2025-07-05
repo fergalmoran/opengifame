@@ -4,7 +4,8 @@ import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
 import FacebookProvider from 'next-auth/providers/facebook';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import bcrypt from 'bcryptjs';
+// TODO: Uncomment when database authentication is implemented
+// import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 
 export const authOptions: NextAuthOptions = {

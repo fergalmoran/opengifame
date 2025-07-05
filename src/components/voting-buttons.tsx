@@ -75,7 +75,7 @@ export function VotingButtons({
         size="sm"
         onClick={() => handleVote(true)}
         disabled={isVoting}
-        className="flex flex-col items-center space-y-1 h-auto py-2 px-3"
+        className="flex flex-col items-center space-y-1 h-auto py-2 px-3 cursor-pointer hover:scale-105 transition-transform"
       >
         <span className="text-lg">👍</span>
         <span className="text-xs">{upvotes}</span>
@@ -86,7 +86,7 @@ export function VotingButtons({
         size="sm"
         onClick={() => handleVote(false)}
         disabled={isVoting}
-        className="flex flex-col items-center space-y-1 h-auto py-2 px-3"
+        className="flex flex-col items-center space-y-1 h-auto py-2 px-3 cursor-pointer hover:scale-105 transition-transform"
       >
         <span className="text-lg">👎</span>
         <span className="text-xs">{downvotes}</span>

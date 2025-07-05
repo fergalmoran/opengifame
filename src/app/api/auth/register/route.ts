@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+// TODO: Uncomment when database is connected
+// import bcrypt from 'bcryptjs';
 // import { db } from '@/lib/db';
 // import { users } from '@/lib/db/schema';
 
@@ -63,9 +64,9 @@ export async function POST(request: NextRequest) {
     //   );
     // }
 
-    // Hash password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // TODO: Hash password when database is connected
+    // const saltRounds = 12;
+    // const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // TODO: Create user in database when DB is connected
     // const newUser = await db.insert(users).values({

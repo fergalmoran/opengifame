@@ -9,14 +9,15 @@ import { VotingButtons } from '@/components/voting-buttons';
 import { getServerAuthSession } from '@/lib/server-auth';
 
 interface ImagePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ImagePage({ params }: ImagePageProps) {
   try {
     const session = await getServerAuthSession();
+    const { id } = await params;
     
     const imageResult = await db
       .select({
@@ -34,7 +35,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
       })
       .from(images)
       .leftJoin(users, eq(images.uploadedBy, users.id))
-      .where(eq(images.id, params.id))
+      .where(eq(images.id, id))
       .limit(1);
 
     if (imageResult.length === 0) {
@@ -51,7 +52,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
           isUpvote: votes.isUpvote,
         })
         .from(votes)
-        .where(and(eq(votes.imageId, params.id), eq(votes.userId, session.user.id)))
+        .where(and(eq(votes.imageId, id), eq(votes.userId, session.user.id)))
         .limit(1);
 
       if (userVoteResult.length > 0) {
@@ -70,7 +71,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
       })
       .from(comments)
       .leftJoin(users, eq(comments.authorId, users.id))
-      .where(eq(comments.imageId, params.id))
+      .where(eq(comments.imageId, id))
       .orderBy(desc(comments.createdAt));
 
     return (
@@ -78,7 +79,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <EditableTitle 
-              imageId={params.id}
+              imageId={id}
               initialTitle={image.title || 'Untitled'}
               imageOwnerId={image.uploadedBy}
             />
@@ -89,7 +90,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
               {/* Voting Buttons - Left Side */}
               <div className="flex flex-col items-center space-y-2 pt-4">
                 <VotingButtons
-                  imageId={params.id}
+                  imageId={id}
                   initialUpvotes={image.upvotes}
                   initialDownvotes={image.downvotes}
                   initialUserVote={userVote}
@@ -119,7 +120,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
             {/* Comments Section */}
             <div className="border-t pt-6">
               <Comments 
-                imageId={params.id} 
+                imageId={id} 
                 initialComments={imageComments.map(comment => ({
                   id: comment.id,
                   content: comment.content,

@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, User, LogOut, Github, Mail, AlertCircle } from 'lucide-react';
+import { Upload, User, LogOut, Github, Mail, AlertCircle, ChevronDown } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { OpenGifameLogo } from '@/components/opengifame-logo';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 
 interface Provider {
@@ -104,6 +106,42 @@ export function Header() {
     }
   };
 
+  const getUserInitials = (name?: string | null) => {
+    if (!name) return 'U';
+    
+    const names = name.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  };
+
+  const getUserAvatarColor = (name?: string | null) => {
+    if (!name) return 'bg-gray-500';
+    
+    // Generate a consistent color based on the username
+    const colors = [
+      'bg-red-500',
+      'bg-blue-500', 
+      'bg-green-500',
+      'bg-purple-500',
+      'bg-yellow-500',
+      'bg-pink-500',
+      'bg-indigo-500',
+      'bg-teal-500',
+      'bg-orange-500',
+      'bg-cyan-500'
+    ];
+    
+    // Simple hash function to get consistent color for same name
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
@@ -112,47 +150,52 @@ export function Header() {
             <OpenGifameLogo className="h-8 w-8 flex-shrink-0" />
             <span className="text-xl font-bold">OpenGifame</span>
           </Link>
-
-          <nav className="hidden sm:flex items-center space-x-6">
-            <Link
-              href="/"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Gallery
-            </Link>
-            <Link
-              href="/trending"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              Trending
-            </Link>
-          </nav>
         </div>
+
+        {/* Prominent Upload Button - Center */}
+        {session && (
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <Button asChild className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border-0">
+              <Link href="/upload">
+                <Upload className="mr-2 h-4 w-4" />
+                Upload
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="flex items-center space-x-3 flex-shrink-0">
           <ThemeToggle />
           {session ? (
-            <>
-              <Button asChild size="sm">
-                <Link href="/upload">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload
-                </Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/profile">
-                  <User className="mr-2 h-4 w-4" />
-                  {session.user?.name}
-                </Link>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => signOut()}
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-1">
+                    <Avatar className="h-8 w-8 border-2 border-border bg-background">
+                      <AvatarImage src={session.user?.image || undefined} alt="Profile" />
+                      <AvatarFallback className={`${getUserAvatarColor(session.user?.name)} text-white`}>
+                        {getUserInitials(session.user?.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <ChevronDown className="h-3 w-3 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => signOut()}
+                    className="flex items-center text-red-600 focus:text-red-600"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
           ) : (
             <Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
               <DialogTrigger asChild>
