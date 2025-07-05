@@ -12,6 +12,9 @@ import {
 import { eq, desc, inArray } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   try {
     const session = await getServerAuthSession();
@@ -154,11 +157,16 @@ export default async function Home() {
     );
   } catch (error) {
     console.error("Error loading homepage:", error);
+    
+    // Return a fallback UI instead of throwing
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <p className="text-lg text-muted-foreground">
-            Unable to load images. Please try again later.
+        <div className="text-center py-12 bg-destructive/10 rounded-lg border border-destructive/20">
+          <p className="text-lg text-destructive mb-4">
+            Oops! Something went wrong loading the images.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Please try refreshing the page. If the problem persists, contact support.
           </p>
         </div>
       </div>

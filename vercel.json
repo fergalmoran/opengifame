@@ -1,0 +1,8 @@
+{
+  "buildCommand": "bun run db:migrate && bun run build:local",
+  "devCommand": "bun run dev:plain",
+  "installCommand": "bun install",
+  "env": {
+    "DATABASE_URL": "@database_url"
+  }
+}
