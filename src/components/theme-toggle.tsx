@@ -4,6 +4,7 @@ import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import { sharedStyles } from '@/lib/utils';
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
@@ -27,12 +28,12 @@ export function ThemeToggle() {
       variant="ghost"
       size="sm"
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className="h-9 w-9 p-0 transition-all duration-200 hover:scale-105"
+      className={`h-9 w-9 p-0 ${sharedStyles.hoverLift}`}
     >
       {theme === 'light' ? (
-        <Moon className="h-4 w-4 transition-transform duration-200" />
+        <Moon className="h-4 w-4" />
       ) : (
-        <Sun className="h-4 w-4 transition-transform duration-200" />
+        <Sun className="h-4 w-4" />
       )}
       <span className="sr-only">Toggle theme</span>
     </Button>

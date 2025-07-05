@@ -1,18 +1,9 @@
 import { db } from "@/lib/db";
-import {
-  images,
-  users,
-  imageTags,
-  tags,
-  votes,
-  comments,
-} from "@/lib/db/schema";
-import { desc, sql, eq, inArray } from "drizzle-orm";
+import { images, users } from "@/lib/db/schema";
+import { desc, sql, eq } from "drizzle-orm";
 import { ImageCard } from "@/components/image-card";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { fetchImageMetadata } from "@/lib/image-utils";
 export default async function TrendingPage() {
-  const session = await getServerSession(authOptions);
 
   // Get trending images based on score (upvotes - downvotes) and recent activity
   const imagesData = await db
@@ -24,10 +15,9 @@ export default async function TrendingPage() {
       upvotes: images.upvotes,
       downvotes: images.downvotes,
       createdAt: images.createdAt,
-      uploadedBy: {
-        name: users.name,
-        image: users.image,
-      },
+      uploadedBy: users.id,
+      uploaderName: users.name,
+      uploaderImage: users.image,
       score: sql<number>`${images.upvotes} - ${images.downvotes}`,
     })
     .from(images)
@@ -39,89 +29,14 @@ export default async function TrendingPage() {
     )
     .limit(20);
 
-  // Get tags for each image
-  const imageIds = imagesData.map((img) => img.id);
-
-  let imageTags_data: Array<{
-    imageId: string;
-    tag: { id: string; name: string } | null;
-  }> = [];
-
-  if (imageIds.length > 0) {
-    imageTags_data = await db
-      .select({
-        imageId: imageTags.imageId,
-        tag: {
-          id: tags.id,
-          name: tags.name,
-        },
-      })
-      .from(imageTags)
-      .leftJoin(tags, eq(imageTags.tagId, tags.id))
-      .where(inArray(imageTags.imageId, imageIds));
-  }
-
-  // Get user votes if logged in
-  let userVotes: Record<string, "up" | "down"> = {};
-  if (session?.user?.id && imageIds.length > 0) {
-    const userVotesData = await db
-      .select({
-        imageId: votes.imageId,
-        isUpvote: votes.isUpvote,
-      })
-      .from(votes)
-      .where(eq(votes.userId, session.user.id));
-
-    const filteredVotes = userVotesData.filter((vote) =>
-      imageIds.includes(vote.imageId)
-    );
-
-    userVotes = filteredVotes.reduce(
-      (
-        acc: Record<string, "up" | "down">,
-        vote: { imageId: string; isUpvote: boolean }
-      ) => {
-        acc[vote.imageId] = vote.isUpvote ? "up" : "down";
-        return acc;
-      },
-      {}
-    );
-  }
-
-  // Get comment counts
-  let commentCounts: Array<{ imageId: string; count: number }> = [];
-  if (imageIds.length > 0) {
-    commentCounts = await db
-      .select({
-        imageId: comments.imageId,
-        count: sql<number>`count(*)`,
-      })
-      .from(comments)
-      .where(inArray(comments.imageId, imageIds))
-      .groupBy(comments.imageId);
-  }
-
-  const commentCountMap = commentCounts.reduce(
-    (
-      acc: Record<string, number>,
-      { imageId, count }: { imageId: string; count: number }
-    ) => {
-      acc[imageId] = count;
-      return acc;
-    },
-    {}
-  );
-
-  // Group tags by image
-  const tagsByImage = imageTags_data.reduce(
-    (acc: Record<string, Array<{ id: string; name: string }>>, item) => {
-      if (!acc[item.imageId]) acc[item.imageId] = [];
-      if (item.tag) {
-        acc[item.imageId].push(item.tag);
-      }
-      return acc;
-    },
-    {}
+  // Fetch metadata for all images
+  const { tagsByImage, commentCountMap, userVotes } = await fetchImageMetadata(
+    imagesData.map(img => ({
+      ...img,
+      uploadedBy: img.uploadedBy || "",
+      uploaderName: img.uploaderName || "",
+      uploaderImage: img.uploaderImage || "",
+    }))
   );
 
   return (
@@ -145,8 +60,8 @@ export default async function TrendingPage() {
             downvotes={image.downvotes}
             createdAt={image.createdAt}
             uploadedBy={{
-              name: image.uploadedBy?.name || undefined,
-              image: image.uploadedBy?.image || undefined,
+              name: image.uploaderName || undefined,
+              image: image.uploaderImage || undefined,
             }}
             tags={tagsByImage[image.id] || []}
             userVote={userVotes[image.id] || null}

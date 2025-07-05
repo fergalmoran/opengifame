@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSession } from 'next-auth/react';
+import { formatDate } from '@/lib/date-utils';
 
 interface Comment {
   id: string;
@@ -53,19 +54,6 @@ export function Comments({ imageId, initialComments }: CommentsProps) {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    // Use a consistent format that works on both server and client
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC', // Force UTC to ensure consistency
-    }).format(date);
   };
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn, sharedStyles, componentStyles } from '@/lib/utils';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
@@ -36,11 +36,11 @@ export function Badge({
     secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
     destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/80',
     outline: 'text-foreground border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-    funky: 'bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-800 dark:text-purple-200 hover:from-purple-200 hover:to-pink-200 dark:hover:from-purple-800/40 dark:hover:to-pink-800/40 border border-purple-200/50 dark:border-purple-700/50',
-    gradient: 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white hover:from-purple-600 hover:via-pink-600 hover:to-red-600 shadow-lg hover:shadow-xl'
+    funky: componentStyles.badge.funky,
+    gradient: componentStyles.badge.gradient
   };
 
-  const animationClasses = animated ? 'hover-lift animate-float' : 'hover-lift';
+  const animationClasses = animated ? `${sharedStyles.hoverLift} ${sharedStyles.animateFloat}` : sharedStyles.hoverLift;
 
   const classes = cn(
     baseClasses,

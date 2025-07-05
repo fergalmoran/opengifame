@@ -1,12 +1,11 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { cn, sharedStyles } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface StatsDisplayProps {
   value: number;
   label?: string;
-  variant?: 'default' | 'success' | 'danger' | 'neutral';
   size?: 'sm' | 'md' | 'lg';
   showTrend?: boolean;
   animated?: boolean;
@@ -16,7 +15,6 @@ interface StatsDisplayProps {
 export function StatsDisplay({
   value,
   label,
-  variant = 'default',
   size = 'md',
   showTrend = true,
   animated = false,
@@ -62,7 +60,7 @@ export function StatsDisplay({
     'inline-flex items-center space-x-1 rounded-full border font-medium transition-all duration-200',
     getSizeClasses(),
     getVariantClasses(),
-    animated && 'hover-lift animate-pulse',
+    animated && `${sharedStyles.hoverLift} animate-pulse`,
     className
   );
 
@@ -86,11 +84,10 @@ export function ScoreDisplay({ score, ...props }: { score: number } & Omit<Stats
   return <StatsDisplay value={score} label="score" {...props} />;
 }
 
-export function VoteDisplay({ votes, type, ...props }: { votes: number; type: 'up' | 'down' } & Omit<StatsDisplayProps, 'value' | 'variant'>) {
+export function VoteDisplay({ votes, ...props }: { votes: number; type?: 'up' | 'down' } & Omit<StatsDisplayProps, 'value'>) {
   return (
     <StatsDisplay 
       value={votes} 
-      variant={type === 'up' ? 'success' : 'danger'} 
       showTrend={false}
       {...props} 
     />
@@ -98,5 +95,5 @@ export function VoteDisplay({ votes, type, ...props }: { votes: number; type: 'u
 }
 
 export function CommentDisplay({ count, ...props }: { count: number } & Omit<StatsDisplayProps, 'value'>) {
-  return <StatsDisplay value={count} label={count === 1 ? 'comment' : 'comments'} variant="neutral" showTrend={false} {...props} />;
+  return <StatsDisplay value={count} label={count === 1 ? 'comment' : 'comments'} showTrend={false} {...props} />;
 }

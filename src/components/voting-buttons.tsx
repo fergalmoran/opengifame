@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import { sharedStyles, componentStyles } from '@/lib/utils';
 
 interface VotingButtonsProps {
   imageId: string;
@@ -112,10 +113,10 @@ export function VotingButtons({
         size={getButtonSize()}
         onClick={() => handleVote(true)}
         disabled={isVoting}
-        className={`hover-lift transition-all duration-200 relative overflow-hidden ${
+        className={`${sharedStyles.hoverLift} relative overflow-hidden ${
           userVote === 'up' 
-            ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white neon-glow border-0' 
-            : 'hover:bg-green-50 hover:text-green-600 hover:border-green-300 dark:hover:bg-green-900/30 neon-border'
+            ? componentStyles.voting.upvote
+            : componentStyles.voting.upvoteOutline
         } ${voteAnimation === 'up' ? 'animate-pulse scale-110' : ''}`}
       >
         {voteAnimation === 'up' && (
@@ -130,10 +131,10 @@ export function VotingButtons({
         size={getButtonSize()}
         onClick={() => handleVote(false)}
         disabled={isVoting}
-        className={`hover-lift transition-all duration-200 relative overflow-hidden ${
+        className={`${sharedStyles.hoverLift} relative overflow-hidden ${
           userVote === 'down' 
-            ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white neon-glow border-0' 
-            : 'hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-900/30 neon-border'
+            ? componentStyles.voting.downvote
+            : componentStyles.voting.downvoteOutline
         } ${voteAnimation === 'down' ? 'animate-pulse scale-110' : ''}`}
       >
         {voteAnimation === 'down' && (

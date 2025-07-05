@@ -1,4 +1,5 @@
 # Copilot Instructions
+Unless specified otherwise, bun is our package manager and we use it for all package management tasks. Here are some guidelines to follow when working on the project: 
 1. Always use bun install to install new packages.
 2. Use bun run to execute scripts defined in package.json.
 3. For managing dependencies, prefer bun add <package> over npm install <package>.
