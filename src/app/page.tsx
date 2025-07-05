@@ -130,31 +130,26 @@ export default async function Home() {
         {/* Hero section for empty state or main content */}
         {imagesData.length === 0 ? (
           <div className="text-center py-24">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-2xl animate-pulse" />
-              </div>
-              <div className="relative z-10">
-                <h2 className="text-3xl font-bold gradient-text mb-4">
-                  Welcome to OpenGifame
-                </h2>
-                <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">
-                  No images uploaded yet. Be the first to share your amazing content with the world!
-                </p>
-                <Button asChild className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white hover-lift neon-glow">
-                  <Link href="/upload">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload First Image
-                  </Link>
-                </Button>
-              </div>
+            <div className="space-y-6">
+              <h2 className="text-3xl font-bold text-foreground">
+                Welcome to OpenGifame
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                No images uploaded yet. Be the first to share your amazing content with the world!
+              </p>
+              <Button asChild className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
+                <Link href="/upload">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload First Image
+                </Link>
+              </Button>
             </div>
           </div>
         ) : (
           <>
             {/* Page header */}
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold gradient-text mb-4 animate-float">
+              <h1 className="text-4xl font-bold text-foreground mb-4">
                 Latest Images
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -162,42 +157,34 @@ export default async function Home() {
               </p>
             </div>
             
-            {/* Image grid with staggered animations */}
+            {/* Image grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {imagesData.map((image, index) => (
-                <div key={image.id} className={`animate-float stagger-${Math.min((index % 5) + 1, 5)}`}>
-                  <ImageCard
-                    id={image.id}
-                    title={image.title}
-                    description={image.description || undefined}
-                    url={image.url}
-                    upvotes={image.upvotes}
-                    downvotes={image.downvotes}
-                    createdAt={image.createdAt}
-                    uploadedBy={{
-                      name: image.uploaderName || undefined,
-                      image: image.uploaderImage || undefined,
-                    }}
-                    tags={tagsByImage[image.id] || []}
-                    userVote={userVotes[image.id] || null}
-                    commentCount={commentCountMap[image.id] || 0}
-                  />
-                </div>
+              {imagesData.map((image) => (
+                <ImageCard
+                  key={image.id}
+                  id={image.id}
+                  title={image.title}
+                  description={image.description || undefined}
+                  url={image.url}
+                  upvotes={image.upvotes}
+                  downvotes={image.downvotes}
+                  createdAt={image.createdAt}
+                  uploadedBy={{
+                    name: image.uploaderName || undefined,
+                    image: image.uploaderImage || undefined,
+                  }}
+                  tags={tagsByImage[image.id] || []}
+                  userVote={userVotes[image.id] || null}
+                  commentCount={commentCountMap[image.id] || 0}
+                />
               ))}
             </div>
 
             {/* Load more section */}
             <div className="text-center mt-16">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl animate-pulse" />
-                </div>
-                <div className="relative z-10">
-                  <Button variant="outline" className="hover-lift neon-border">
-                    Load More Images
-                  </Button>
-                </div>
-              </div>
+              <Button variant="outline">
+                Load More Images
+              </Button>
             </div>
           </>
         )}

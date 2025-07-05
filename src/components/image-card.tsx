@@ -86,16 +86,16 @@ export function ImageCard({
   const score = voteCount.upvotes - voteCount.downvotes;
 
   return (
-    <Card className="overflow-hidden funky-card hover-lift glass-effect border-border/50 transition-all duration-300 hover:border-purple-500/30">
+    <Card className="overflow-hidden hover-lift transition-all duration-200 hover:shadow-lg">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <Link
             href={`/image/${id}`}
-            className="text-lg font-semibold hover:text-primary transition-colors duration-200 gradient-text"
+            className="text-lg font-semibold hover:text-primary transition-colors duration-200"
           >
             {title}
           </Link>
-          <ScoreDisplay score={score} size="sm" animated />
+          <ScoreDisplay score={score} size="sm" />
         </div>
         {description && (
           <p className="text-sm text-muted-foreground">{description}</p>
@@ -109,10 +109,9 @@ export function ImageCard({
               src={url}
               alt={title}
               fill
-              className="object-cover transition-all duration-500 group-hover:scale-110"
+              className="object-cover transition-all duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="absolute inset-0 border-2 border-transparent group-hover:border-purple-500/50 transition-colors duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
         </Link>
       </CardContent>
@@ -125,9 +124,9 @@ export function ImageCard({
               size="sm"
               onClick={() => handleVote('up')}
               disabled={!session}
-              className={`hover-lift transition-all duration-200 ${
+              className={`transition-all duration-200 ${
                 currentVote === 'up' 
-                  ? 'bg-green-500 hover:bg-green-600 text-white neon-glow' 
+                  ? 'bg-green-500 hover:bg-green-600 text-white' 
                   : 'hover:bg-green-50 hover:text-green-600 hover:border-green-300 dark:hover:bg-green-900/30'
               }`}
             >
@@ -139,9 +138,9 @@ export function ImageCard({
               size="sm"
               onClick={() => handleVote('down')}
               disabled={!session}
-              className={`hover-lift transition-all duration-200 ${
+              className={`transition-all duration-200 ${
                 currentVote === 'down' 
-                  ? 'bg-red-500 hover:bg-red-600 text-white neon-glow' 
+                  ? 'bg-red-500 hover:bg-red-600 text-white' 
                   : 'hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-900/30'
               }`}
             >
@@ -151,7 +150,7 @@ export function ImageCard({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm" asChild className="hover-lift hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-900/30">
+            <Button variant="ghost" size="sm" asChild className="hover:bg-accent hover:text-accent-foreground">
               <Link href={`/image/${id}`}>
                 <MessageCircle className="mr-1 h-4 w-4" />
                 {commentCount}
@@ -170,14 +169,13 @@ export function ImageCard({
 
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {tags.map((tag, index) => (
+            {tags.map((tag) => (
               <Badge
                 key={tag.id}
-                variant="funky"
+                variant="secondary"
                 size="sm"
                 href={`/tag/${tag.name}`}
-                animated
-                className={`stagger-${Math.min(index + 1, 5)}`}
+                className="hover:bg-secondary/80"
               >
                 #{tag.name}
               </Badge>

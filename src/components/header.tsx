@@ -143,28 +143,22 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center space-x-6 flex-shrink-0">
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="relative">
-              <OpenGifameLogo className="h-8 w-8 flex-shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
-              <div className="absolute inset-0 h-8 w-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent group-hover:animate-pulse">
-              OpenGifame
-            </span>
+            <OpenGifameLogo className="h-8 w-8 flex-shrink-0 transition-transform duration-200 group-hover:scale-105" />
+            <span className="text-xl font-bold">OpenGifame</span>
           </Link>
         </div>
 
-        {/* Prominent Upload Button - Center */}
+        {/* Upload Button - Center */}
         {session && (
           <div className="absolute left-1/2 transform -translate-x-1/2">
-            <Button asChild className="relative overflow-hidden bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border-0 hover-lift neon-glow">
+            <Button asChild className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 border-0">
               <Link href="/upload">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-400/0 via-white/20 to-purple-400/0 transform -skew-x-12 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700" />
-                <Upload className="mr-2 h-4 w-4 relative z-10" />
-                <span className="relative z-10">Upload</span>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload
               </Link>
             </Button>
           </div>
@@ -175,22 +169,19 @@ export function Header() {
           {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-1 hover-lift">
-                    <div className="relative">
-                      <Avatar className="h-8 w-8 border-2 border-border bg-background transition-all duration-300 hover:border-purple-500/50">
-                        <AvatarImage src={session.user?.image || undefined} alt="Profile" />
-                        <AvatarFallback className={`${getUserAvatarColor(session.user?.name)} text-white`}>
-                          {getUserInitials(session.user?.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 opacity-0 hover:opacity-100 transition-opacity duration-300" />
-                    </div>
+                  <Button variant="ghost" size="sm" className="flex items-center space-x-1 p-1">
+                    <Avatar className="h-8 w-8 border-2 border-border bg-background">
+                      <AvatarImage src={session.user?.image || undefined} alt="Profile" />
+                      <AvatarFallback className={`${getUserAvatarColor(session.user?.name)} text-white`}>
+                        {getUserInitials(session.user?.name)}
+                      </AvatarFallback>
+                    </Avatar>
                     <ChevronDown className="h-3 w-3 opacity-50" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 glass-effect">
+                <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center hover-lift">
+                    <Link href="/profile" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
                       Profile
                     </Link>
@@ -198,7 +189,7 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={() => signOut()}
-                    className="flex items-center text-red-600 focus:text-red-600 hover-lift"
+                    className="flex items-center text-red-600 focus:text-red-600"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
@@ -208,118 +199,113 @@ export function Header() {
           ) : (
             <Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="hover-lift neon-border">
+                <Button size="sm" variant="outline" className="hover:bg-accent hover:text-accent-foreground">
                   Sign In
                 </Button>
               </DialogTrigger>
-                <DialogContent className="sm:max-w-md glass-effect border-0">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10 rounded-lg" />
-                  <div className="relative z-10">
-                    <DialogHeader>
-                      <DialogTitle className="text-center gradient-text text-2xl">Welcome to OpenGifame</DialogTitle>
-                      <p className="text-center text-sm text-muted-foreground">
-                        Sign in to share and discover amazing images
-                      </p>
-                    </DialogHeader>
-                    <div className="space-y-6 pt-4">
-                      {/* Credentials Form */}
-                      <form onSubmit={handleCredentialsSignIn} className="space-y-4">
-                        {error && (
-                          <Alert variant="destructive" className="glass-effect">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{error}</AlertDescription>
-                          </Alert>
-                        )}
-                        
-                        <div className="space-y-2">
-                          <label htmlFor="modal-email" className="text-sm font-medium">
-                            Email
-                          </label>
-                          <Input
-                            id="modal-email"
-                            type="email"
-                            value={credentials.email}
-                            onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
-                            placeholder="Enter your email"
-                            disabled={isLoading}
-                            required
-                            className="neon-border hover-lift"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <label htmlFor="modal-password" className="text-sm font-medium">
-                            Password
-                          </label>
-                          <Input
-                            id="modal-password"
-                            type="password"
-                            value={credentials.password}
-                            onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                            placeholder="Enter your password"
-                            disabled={isLoading}
-                            required
-                            className="neon-border hover-lift"
-                          />
-                        </div>
-
-                        <Button type="submit" className="w-full hover-lift neon-glow" disabled={isLoading}>
-                          {isLoading ? 'Signing in...' : 'Sign In'}
-                        </Button>
-                      </form>
-
-                      {/* Divider */}
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-border/50" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-background/80 px-2 text-muted-foreground backdrop-blur-sm">
-                            Or continue with
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* OAuth Providers */}
-                      <div className="space-y-3">
-                        {providers ? (
-                          Object.values(providers)
-                            .filter(provider => provider.id !== 'credentials')
-                            .map((provider) => (
-                            <Button
-                              key={provider.id}
-                              onClick={() => handleSignIn(provider.id)}
-                              className={`w-full flex items-center justify-center space-x-2 ${getProviderColor(provider.id)} hover-lift neon-glow`}
-                              variant="default"
-                              disabled={isLoading}
-                            >
-                              {getProviderIcon(provider.id)}
-                              <span>Continue with {provider.name}</span>
-                            </Button>
-                          ))
-                        ) : (
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary neon-glow"></div>
-                            </div>
-                            <p className="text-center text-muted-foreground">Loading sign-in options...</p>
-                          </div>
-                        )}
-                      </div>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-2xl font-semibold">Welcome to OpenGifame</DialogTitle>
+                    <p className="text-center text-sm text-muted-foreground">
+                      Sign in to share and discover amazing images
+                    </p>
+                  </DialogHeader>
+                  <div className="space-y-6 pt-4">
+                    {/* Credentials Form */}
+                    <form onSubmit={handleCredentialsSignIn} className="space-y-4">
+                      {error && (
+                        <Alert variant="destructive">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                      )}
                       
-                      {/* Register Link */}
-                      <div className="text-center pt-2">
-                        <p className="text-sm text-muted-foreground">
-                          Don&apos;t have an account?{' '}
-                          <Link 
-                            href="/auth/register" 
-                            className="text-primary hover:underline font-medium gradient-text"
-                            onClick={() => setIsSignInOpen(false)}
-                          >
-                            Create one here
-                          </Link>
-                        </p>
+                      <div className="space-y-2">
+                        <label htmlFor="modal-email" className="text-sm font-medium">
+                          Email
+                        </label>
+                        <Input
+                          id="modal-email"
+                          type="email"
+                          value={credentials.email}
+                          onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+                          placeholder="Enter your email"
+                          disabled={isLoading}
+                          required
+                        />
                       </div>
+
+                      <div className="space-y-2">
+                        <label htmlFor="modal-password" className="text-sm font-medium">
+                          Password
+                        </label>
+                        <Input
+                          id="modal-password"
+                          type="password"
+                          value={credentials.password}
+                          onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                          placeholder="Enter your password"
+                          disabled={isLoading}
+                          required
+                        />
+                      </div>
+
+                      <Button type="submit" className="w-full" disabled={isLoading}>
+                        {isLoading ? 'Signing in...' : 'Sign In'}
+                      </Button>
+                    </form>
+
+                    {/* Divider */}
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                          Or continue with
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* OAuth Providers */}
+                    <div className="space-y-3">
+                      {providers ? (
+                        Object.values(providers)
+                          .filter(provider => provider.id !== 'credentials')
+                          .map((provider) => (
+                          <Button
+                            key={provider.id}
+                            onClick={() => handleSignIn(provider.id)}
+                            className={`w-full flex items-center justify-center space-x-2 ${getProviderColor(provider.id)}`}
+                            variant="default"
+                            disabled={isLoading}
+                          >
+                            {getProviderIcon(provider.id)}
+                            <span>Continue with {provider.name}</span>
+                          </Button>
+                        ))
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          </div>
+                          <p className="text-center text-muted-foreground">Loading sign-in options...</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Register Link */}
+                    <div className="text-center pt-2">
+                      <p className="text-sm text-muted-foreground">
+                        Don&apos;t have an account?{' '}
+                        <Link 
+                          href="/auth/register" 
+                          className="text-primary hover:underline font-medium"
+                          onClick={() => setIsSignInOpen(false)}
+                        >
+                          Create one here
+                        </Link>
+                      </p>
                     </div>
                   </div>
                 </DialogContent>
