@@ -5,6 +5,8 @@ An open-source image sharing platform similar to Imgur, built with Next.js, Driz
 ## Features
 
 - 🖼️ **Image Upload & Sharing** - Upload and share images with the community
+- 🎥 **Smart Video Processing** - Intelligent streaming system with real-time transcoding and smart caching
+- 🎬 **GIF Generation** - Create animated GIFs from any segment of uploaded videos
 - 👍 **Voting System** - Upvote and downvote images
 - 💬 **Comments** - Comment on images with threaded replies
 - 🏷️ **Tagging System** - Tag images and create new tags
@@ -12,6 +14,22 @@ An open-source image sharing platform similar to Imgur, built with Next.js, Driz
 - 🔐 **Authentication** - Sign in with GitHub or Google
 - 🌙 **Dark/Light Mode** - Responsive design with theme support
 - 📱 **Mobile Responsive** - Works great on all devices
+
+## Video Features
+
+OpenGifame includes a sophisticated video processing system with three intelligent modes:
+
+- **Hybrid Mode** (Default): Automatically chooses between streaming and caching based on video duration
+- **Streaming Mode**: Real-time transcoding for immediate playback (2-3 second start time)
+- **Cache Mode**: Pre-conversion with instant subsequent access
+
+**Key Benefits:**
+
+- Long videos (>60s) stream immediately without waiting for conversion
+- Short videos (≤60s) are cached for instant repeat access
+- All videos converted to 480p MP4 for universal browser compatibility
+- Supports MP4, AVI, MKV, MOV, WMV, FLV, WebM, M4V formats
+- Zero storage overhead for streaming mode
 
 ## Tech Stack
 
@@ -33,30 +51,34 @@ An open-source image sharing platform similar to Imgur, built with Next.js, Driz
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <your-repo-url>
    cd opengifame
    ```
 
 2. **Install dependencies**
+
    ```bash
    bun install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
-   
+
    Edit `.env.local` and configure:
+
    ```env
    # Database
    DATABASE_URL="postgres://postgres:hackme@localhost:5432/opengifame"
-   
+
    # NextAuth
    NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="your-secret-key-here"
-   
+
    # OAuth providers (optional)
    GITHUB_CLIENT_ID="your-github-client-id"
    GITHUB_CLIENT_SECRET="your-github-client-secret"
@@ -65,18 +87,21 @@ An open-source image sharing platform similar to Imgur, built with Next.js, Driz
    ```
 
 4. **Set up the database**
-   
+
    Create the PostgreSQL database:
+
    ```sql
    CREATE DATABASE opengifame;
    ```
-   
+
    Run the database migration:
+
    ```bash
    bun run db:push
    ```
 
 5. **Start the development server**
+
    ```bash
    bun run dev
    ```
@@ -132,7 +157,7 @@ The application uses the following main tables:
 
 ## Project Structure
 
-```
+```bash
 src/
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
@@ -172,6 +197,7 @@ The application can be deployed to any platform that supports Next.js:
 - **Docker**
 
 Make sure to:
+
 1. Set up environment variables in your deployment platform
 2. Configure a PostgreSQL database
 3. Set up OAuth providers for production URLs

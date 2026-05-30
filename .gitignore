@@ -36,8 +36,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# video cache
+/public/cache/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 .env.production
 INSTRUCTIONS.md
+
+/public/uploads/

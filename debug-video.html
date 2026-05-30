@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Debug Test</title>
+</head>
+<body>
+    <h1>Video Duration Debug Test</h1>
+    <video id="testVideo" controls width="800">
+        <source src="/uploads/test-10min-video.mp4" type="video/mp4">
+    </video>
+    
+    <div id="debug"></div>
+    
+    <script>
+        const video = document.getElementById('testVideo');
+        const debug = document.getElementById('debug');
+        
+        function logDebug(message) {
+            console.log(message);
+            debug.innerHTML += '<p>' + message + '</p>';
+        }
+        
+        video.addEventListener('loadstart', () => logDebug('loadstart event'));
+        video.addEventListener('durationchange', () => logDebug('durationchange: ' + video.duration + ' seconds'));
+        video.addEventListener('loadedmetadata', () => {
+            logDebug('loadedmetadata: duration=' + video.duration + 's, videoWidth=' + video.videoWidth + ', videoHeight=' + video.videoHeight);
+        });
+        video.addEventListener('loadeddata', () => logDebug('loadeddata event'));
+        video.addEventListener('canplay', () => logDebug('canplay event'));
+        video.addEventListener('canplaythrough', () => logDebug('canplaythrough event'));
+        video.addEventListener('error', (e) => logDebug('error: ' + e.message));
+        
+        // Log current state every 2 seconds
+        setInterval(() => {
+            if (video.duration) {
+                logDebug('Current: ' + video.currentTime.toFixed(1) + 's / ' + video.duration.toFixed(1) + 's');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

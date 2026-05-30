@@ -12,3 +12,5 @@ Unless specified otherwise, bun is our package manager and we use it for all pac
 10. When generating new components, make sure to follow the project's existing tailwind/shadcn styles and include light & dark mode support.
 
 When I say "commit and push", it means to stage all changes, commit with a message, and push to the current branch. Use `git add .`, `git commit -m "your message"`, and `git push`.
+
+This applications runs behind local-ssl-proxy with a trusted letsencrypt certificate. So, you can access it via `https://opengifame.dev.fergl.ie:3000/` when you "bun run dev"

@@ -22,10 +22,15 @@
   --ring: 240 5.9% 10%;
   --radius: 0.5rem;
   
-  /* Brand colors - subtle and professional */
-  --brand-primary: 260 100% 65%;
-  --brand-secondary: 280 100% 70%;
-  --brand-accent: 220 100% 60%;
+  /* Brand colors - vibrant and funky */
+  --brand-primary: 280 100% 70%;
+  --brand-secondary: 320 100% 75%;
+  --brand-accent: 250 100% 65%;
+  --brand-tertiary: 190 100% 60%;
+  --neon-purple: 280 100% 70%;
+  --neon-pink: 320 100% 75%;
+  --neon-cyan: 190 100% 60%;
+  --neon-green: 120 100% 65%;
 }
 
 .dark {
@@ -80,6 +85,24 @@ body {
   color: hsl(var(--foreground));
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.2s ease, color 0.2s ease;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Funky background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, hsl(var(--brand-primary) / 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, hsl(var(--brand-secondary) / 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, hsl(var(--brand-tertiary) / 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 * {
@@ -97,6 +120,37 @@ body {
   to { transform: scale(1); }
 }
 
+/* Funky animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--brand-primary) / 0.5); }
+  50% { box-shadow: 0 0 20px hsl(var(--brand-primary) / 0.8), 0 0 30px hsl(var(--brand-secondary) / 0.4); }
+}
+
+@keyframes rainbow-border {
+  0% { border-color: hsl(var(--brand-primary)); }
+  25% { border-color: hsl(var(--brand-secondary)); }
+  50% { border-color: hsl(var(--brand-tertiary)); }
+  75% { border-color: hsl(var(--neon-green)); }
+  100% { border-color: hsl(var(--brand-primary)); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+}
+
+@keyframes bg-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 /* Utility classes for subtle enhancements */
 .animate-fade-in {
   animation: gentle-fade-in 0.3s ease-out;
@@ -104,6 +158,27 @@ body {
 
 .animate-scale {
   animation: gentle-scale 0.2s ease-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-rainbow-border {
+  animation: rainbow-border 3s linear infinite;
+}
+
+.animate-bg-shift {
+  animation: bg-shift 4s ease infinite;
+  background-size: 400% 400%;
 }
 
 /* Subtle hover effects */
@@ -116,9 +191,32 @@ body {
   box-shadow: 0 4px 12px hsl(var(--foreground) / 0.1);
 }
 
+/* Enhanced hover effects for funky design */
+.hover-funky {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hover-funky:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 10px 25px hsl(var(--brand-primary) / 0.2),
+    0 0 0 1px hsl(var(--brand-primary) / 0.1);
+}
+
 /* Brand gradient for special elements */
 .brand-gradient {
   background: linear-gradient(135deg, hsl(var(--brand-primary)), hsl(var(--brand-secondary)));
+}
+
+.brand-gradient-animated {
+  background: linear-gradient(
+    -45deg, 
+    hsl(var(--brand-primary)), 
+    hsl(var(--brand-secondary)), 
+    hsl(var(--brand-tertiary)), 
+    hsl(var(--neon-pink))
+  );
+  background-size: 400% 400%;
 }
 
 /* Subtle brand text */
@@ -127,4 +225,101 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.brand-text-animated {
+  background: linear-gradient(
+    45deg,
+    hsl(var(--brand-primary)),
+    hsl(var(--brand-secondary)),
+    hsl(var(--brand-tertiary)),
+    hsl(var(--brand-primary))
+  );
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glass effect */
+.glass-panel {
+  background: hsl(var(--background) / 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border) / 0.5);
+}
+
+/* Neon effects */
+.neon-glow {
+  box-shadow: 
+    0 0 5px hsl(var(--brand-primary) / 0.5),
+    0 0 10px hsl(var(--brand-primary) / 0.3),
+    0 0 15px hsl(var(--brand-primary) / 0.1);
+}
+
+.neon-border {
+  border: 1px solid hsl(var(--brand-primary) / 0.5);
+  box-shadow: 
+    0 0 5px hsl(var(--brand-primary) / 0.2),
+    inset 0 0 5px hsl(var(--brand-primary) / 0.1);
+}
+
+/* Fun card effects */
+.card-funky {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.9) 0%,
+    hsl(var(--card) / 0.7) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--brand-primary) / 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-funky::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--brand-primary) / 0.5),
+    hsl(var(--brand-secondary) / 0.5),
+    transparent
+  );
+}
+
+/* Button enhancements */
+.btn-funky {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    45deg,
+    hsl(var(--brand-primary)),
+    hsl(var(--brand-secondary))
+  );
+  transition: all 0.3s ease;
+}
+
+.btn-funky::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--background) / 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-funky:hover::before {
+  left: 100%;
 }

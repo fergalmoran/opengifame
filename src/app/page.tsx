@@ -38,32 +38,54 @@ export default async function Home() {
       <div className="container mx-auto px-4 py-8">
         {/* Hero section for empty state or main content */}
         {imagesData.length === 0 ? (
-          <div className="text-center py-24">
-            <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-foreground">
-                Welcome to OpenGifame
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                No images uploaded yet. Be the first to share your amazing content with the world!
+          <div className="text-center py-24 relative">
+            <div className="space-y-8 relative z-10">
+              <div className="animate-float">
+                <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-bg-shift bg-[length:400%_400%]">
+                  Welcome to OpenGifame
+                </h2>
+              </div>
+              <p className="text-xl text-muted-foreground max-w-md mx-auto leading-relaxed">
+                No images uploaded yet. Be the first to share your amazing content with the world! 🚀
               </p>
-              <Button asChild className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-                <Link href="/upload">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload First Image
-                </Link>
-              </Button>
+              <div className="flex justify-center">
+                <Button asChild className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-bold px-8 py-4 text-lg rounded-2xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 animate-pulse-glow relative overflow-hidden group">
+                  <Link href="/upload">
+                    <Upload className="mr-3 h-5 w-5 group-hover:animate-bounce" />
+                    Upload First Image
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            
+            {/* Decorative background elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-500/10 rounded-full blur-xl animate-float"></div>
+              <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-pink-500/10 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
+              <div className="absolute top-1/2 right-1/3 w-20 h-20 bg-blue-500/10 rounded-full blur-xl animate-float" style={{ animationDelay: '4s' }}></div>
             </div>
           </div>
         ) : (
           <>
             {/* Page header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-foreground mb-4">
-                Latest Images
-              </h1>
-              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Discover and share amazing images from our creative community
-              </p>
+            <div className="text-center mb-12 relative">
+              <div className="space-y-4 relative z-10">
+                <div className="animate-float">
+                  <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-bg-shift bg-[length:400%_400%] mb-4">
+                    Latest Images
+                  </h1>
+                </div>
+                <p className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed">
+                  Discover and share amazing images from our creative community ✨
+                </p>
+              </div>
+              
+              {/* Decorative elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-0 left-1/4 w-24 h-24 bg-purple-500/5 rounded-full blur-xl animate-float"></div>
+                <div className="absolute top-0 right-1/4 w-32 h-32 bg-pink-500/5 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }}></div>
+              </div>
             </div>
             
             {/* Image grid */}
@@ -91,8 +113,9 @@ export default async function Home() {
 
             {/* Load more section */}
             <div className="text-center mt-16">
-              <Button variant="outline">
+              <Button variant="outline" className="px-8 py-3 text-lg font-medium hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 hover:border-purple-500/50 transition-all duration-300 hover:scale-105 hover:shadow-lg group relative overflow-hidden">
                 Load More Images
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
               </Button>
             </div>
           </>
