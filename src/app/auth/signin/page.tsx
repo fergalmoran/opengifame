@@ -28,18 +28,18 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Derive the URL-driven error during render instead of syncing it via an effect.
+  const urlError = searchParams.get("error")
+    ? "Invalid credentials. Please try again."
+    : "";
+  const displayError = error || urlError;
+
   useEffect(() => {
     (async () => {
       const res = await getProviders();
       setProviders(res);
     })();
-
-    // Check for error from URL params
-    const errorParam = searchParams.get("error");
-    if (errorParam) {
-      setError("Invalid credentials. Please try again.");
-    }
-  }, [searchParams]);
+  }, []);
 
   const handleSignIn = (providerId: string) => {
     signIn(providerId, { callbackUrl: "/" });
@@ -112,10 +112,10 @@ function SignInForm() {
         <CardContent className="space-y-6">
           {/* Credentials Form */}
           <form onSubmit={handleCredentialsSignIn} className="space-y-4">
-            {error && (
+            {displayError && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription>{displayError}</AlertDescription>
               </Alert>
             )}
 

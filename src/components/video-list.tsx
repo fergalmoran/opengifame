@@ -21,32 +21,60 @@ interface VideoListProps {
 export function VideoList({ onVideoSelect }: VideoListProps) {
   const [videos, setVideos] = useState<VideoFile[]>([]);
   const [currentPath, setCurrentPath] = useState(getDefaultVideoPath());
-  const [loading, setLoading] = useState(false);
+  // Start in the loading state since we fetch on mount; this avoids a
+  // synchronous setState inside the effect (react-hooks/set-state-in-effect).
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchVideos = useCallback(async (path: string) => {
+    const response = await fetch(`/api/videos/list?path=${encodeURIComponent(path)}`);
+
+    if (!response.ok) {
+      throw new Error('Failed to load videos');
+    }
+
+    const data = await response.json();
+    return (data.videos || []) as VideoFile[];
+  }, []);
+
+  // Manual reload triggered by the user (event handler — setState is fine here).
   const loadVideos = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`/api/videos/list?path=${encodeURIComponent(currentPath)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to load videos');
-      }
-      
-      const data = await response.json();
-      setVideos(data.videos || []);
+      setVideos(await fetchVideos(currentPath));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load videos');
     } finally {
       setLoading(false);
     }
-  }, [currentPath]);
+  }, [currentPath, fetchVideos]);
 
-  // Auto-load videos when component mounts
+  // Auto-load videos on mount and whenever the path changes. State is only
+  // updated after the awaited fetch, never synchronously within the effect.
   useEffect(() => {
-    loadVideos();
-  }, [loadVideos]);
+    let ignore = false;
+    (async () => {
+      try {
+        const result = await fetchVideos(currentPath);
+        if (!ignore) {
+          setVideos(result);
+          setError(null);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err instanceof Error ? err.message : 'Failed to load videos');
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, [currentPath, fetchVideos]);
 
   const handleVideoSelect = (video: VideoFile) => {
     onVideoSelect?.(video);

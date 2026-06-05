@@ -25,7 +25,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-lg">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center space-x-6 flex-shrink-0">
-          <Link href="/" className={`flex items-center space-x-2 ${sharedStyles.hoverFunky} group`}>
+          <Link href="/" className={`flex items-center space-x-2  group`}>
             <OpenGifameLogo className="h-8 w-8 flex-shrink-0 group-hover:animate-wiggle" />
             <span className={`text-xl font-bold ${sharedStyles.brandTextAnimated} group-hover:animate-pulse`}>OpenGifame</span>
           </Link>
@@ -111,7 +111,7 @@ export function Header() {
           ) : (
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className={`${sharedStyles.hoverFunky} ${sharedStyles.neonBorder} relative group overflow-hidden`}>
+                <Button variant="outline" size="sm" className={` ${sharedStyles.neonBorder} relative group overflow-hidden`}>
                   <LogIn className="mr-2 h-4 w-4 group-hover:animate-bounce" />
                   Sign In
                   <span className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>

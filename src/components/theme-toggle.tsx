@@ -3,20 +3,24 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { sharedStyles } from '@/lib/utils';
 
-export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+const emptySubscribe = () => () => {};
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export function ThemeToggle() {
+  // Returns false during SSR/first render and true once on the client, so the
+  // theme-dependent UI only renders after hydration without a setState-in-effect.
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+  const { theme, setTheme } = useTheme();
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="sm" className={`h-9 w-9 p-0 ${sharedStyles.hoverFunky} relative overflow-hidden group`}>
+      <Button variant="ghost" size="sm" className={`h-9 w-9 p-0  relative overflow-hidden group`}>
         <Sun className="h-4 w-4 group-hover:animate-spin" />
         <span className="sr-only">Toggle theme</span>
       </Button>
@@ -28,7 +32,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="sm"
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className={`h-9 w-9 p-0 ${sharedStyles.hoverFunky} relative overflow-hidden group hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 hover:border-purple-500/20 border border-transparent transition-all duration-300`}
+      className={`h-9 w-9 p-0  relative overflow-hidden group hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 hover:border-purple-500/20 border border-transparent transition-all duration-300`}
     >
       {theme === 'light' ? (
         <Moon className="h-4 w-4 group-hover:animate-pulse text-purple-600 group-hover:text-purple-500 transition-colors duration-300" />

@@ -45,7 +45,7 @@ export function Footer() {
               href="https://github.com/fergalmoran/opengifame"
               target="_blank"
               rel="noopener noreferrer"
-              className={`text-sm text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 relative group ${sharedStyles.hoverFunky}`}
+              className={`text-sm text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 relative group `}
             >
               GitHub 🚀
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-300"></span>

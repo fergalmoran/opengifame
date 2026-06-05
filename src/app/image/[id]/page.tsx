@@ -15,66 +15,17 @@ interface ImagePageProps {
 }
 
 export default async function ImagePage({ params }: ImagePageProps) {
+  let data: Awaited<ReturnType<typeof loadImagePageData>>;
   try {
-    const session = await getServerAuthSession();
-    const { id } = await params;
-    
-    const imageResult = await db
-      .select({
-        id: images.id,
-        title: images.title,
-        description: images.description,
-        url: images.url,
-        originalName: images.originalName,
-        upvotes: images.upvotes,
-        downvotes: images.downvotes,
-        createdAt: images.createdAt,
-        uploadedBy: images.uploadedBy,
-        uploaderName: users.name,
-        uploaderEmail: users.email,
-      })
-      .from(images)
-      .leftJoin(users, eq(images.uploadedBy, users.id))
-      .where(eq(images.id, id))
-      .limit(1);
+    data = await loadImagePageData(params);
+  } catch (error) {
+    console.error('Error loading image:', error);
+    notFound();
+  }
 
-    if (imageResult.length === 0) {
-      notFound();
-    }
+  const { id, image, userVote, imageComments } = data;
 
-    const image = imageResult[0];
-
-    // Get user's current vote if authenticated
-    let userVote: 'up' | 'down' | null = null;
-    if (session?.user?.id) {
-      const userVoteResult = await db
-        .select({
-          isUpvote: votes.isUpvote,
-        })
-        .from(votes)
-        .where(and(eq(votes.imageId, id), eq(votes.userId, session.user.id)))
-        .limit(1);
-
-      if (userVoteResult.length > 0) {
-        userVote = userVoteResult[0].isUpvote ? 'up' : 'down';
-      }
-    }
-
-    // Fetch comments for this image
-    const imageComments = await db
-      .select({
-        id: comments.id,
-        content: comments.content,
-        createdAt: comments.createdAt,
-        authorName: users.name,
-        authorEmail: users.email,
-      })
-      .from(comments)
-      .leftJoin(users, eq(comments.authorId, users.id))
-      .where(eq(comments.imageId, id))
-      .orderBy(desc(comments.createdAt));
-
-    return (
+  return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
@@ -134,9 +85,67 @@ export default async function ImagePage({ params }: ImagePageProps) {
           </CardContent>
         </Card>
       </div>
-    );
-  } catch (error) {
-    console.error('Error loading image:', error);
+  );
+}
+
+async function loadImagePageData(params: ImagePageProps['params']) {
+  const session = await getServerAuthSession();
+  const { id } = await params;
+
+  const imageResult = await db
+    .select({
+      id: images.id,
+      title: images.title,
+      description: images.description,
+      url: images.url,
+      originalName: images.originalName,
+      upvotes: images.upvotes,
+      downvotes: images.downvotes,
+      createdAt: images.createdAt,
+      uploadedBy: images.uploadedBy,
+      uploaderName: users.name,
+      uploaderEmail: users.email,
+    })
+    .from(images)
+    .leftJoin(users, eq(images.uploadedBy, users.id))
+    .where(eq(images.id, id))
+    .limit(1);
+
+  if (imageResult.length === 0) {
     notFound();
   }
+
+  const image = imageResult[0];
+
+  // Get user's current vote if authenticated
+  let userVote: 'up' | 'down' | null = null;
+  if (session?.user?.id) {
+    const userVoteResult = await db
+      .select({
+        isUpvote: votes.isUpvote,
+      })
+      .from(votes)
+      .where(and(eq(votes.imageId, id), eq(votes.userId, session.user.id)))
+      .limit(1);
+
+    if (userVoteResult.length > 0) {
+      userVote = userVoteResult[0].isUpvote ? 'up' : 'down';
+    }
+  }
+
+  // Fetch comments for this image
+  const imageComments = await db
+    .select({
+      id: comments.id,
+      content: comments.content,
+      createdAt: comments.createdAt,
+      authorName: users.name,
+      authorEmail: users.email,
+    })
+    .from(comments)
+    .leftJoin(users, eq(comments.authorId, users.id))
+    .where(eq(comments.imageId, id))
+    .orderBy(desc(comments.createdAt));
+
+  return { id, image, userVote, imageComments };
 }

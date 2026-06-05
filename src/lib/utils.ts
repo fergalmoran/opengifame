@@ -12,7 +12,6 @@ export function cn(...inputs: ClassValue[]) {
 // Common interactive styles
 export const sharedStyles = {
   hoverLift: "hover-lift transition-all duration-200",
-  hoverFunky: "hover-funky",
   glassPanel: "glass-panel border",
   brandGradient: "brand-gradient text-white",
   brandGradientAnimated: "brand-gradient-animated text-white animate-bg-shift",
@@ -30,10 +29,10 @@ export const sharedStyles = {
 
 // Component-specific style combinations
 export const componentStyles = {
-  card: `overflow-hidden ${sharedStyles.hoverFunky} ${sharedStyles.cardFunky}`,
+  card: `overflow-hidden  ${sharedStyles.cardFunky}`,
   button: {
-    primary: `${sharedStyles.btnFunky} font-medium shadow-lg hover:shadow-xl ${sharedStyles.hoverFunky} text-white`,
-    secondary: `${sharedStyles.brandGradientAnimated} font-medium shadow-lg hover:shadow-xl ${sharedStyles.hoverFunky}`,
+    primary: `${sharedStyles.btnFunky} font-medium shadow-lg hover:shadow-xl  text-white`,
+    secondary: `${sharedStyles.brandGradientAnimated} font-medium shadow-lg hover:shadow-xl `,
     ghost: `hover:bg-accent hover:text-accent-foreground ${sharedStyles.hoverLift}`,
     funky: `${sharedStyles.brandGradientAnimated} ${sharedStyles.btnFunky} font-bold shadow-lg hover:shadow-2xl transform transition-all duration-300 hover:scale-105`,
   },
@@ -45,9 +44,9 @@ export const componentStyles = {
     rainbow: `${sharedStyles.brandGradientAnimated} text-white font-bold px-4 py-2 rounded-full ${sharedStyles.animateRainbowBorder} shadow-lg`,
   },
   voting: {
-    upvote: `bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white ${sharedStyles.neonGlow} border-0 ${sharedStyles.hoverFunky}`,
-    downvote: `bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white ${sharedStyles.neonGlow} border-0 ${sharedStyles.hoverFunky}`,
-    upvoteOutline: `hover:bg-green-50 hover:text-green-600 hover:border-green-300 dark:hover:bg-green-900/30 ${sharedStyles.neonBorder} ${sharedStyles.hoverFunky}`,
-    downvoteOutline: `hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-900/30 ${sharedStyles.neonBorder} ${sharedStyles.hoverFunky}`,
+    upvote: `bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white ${sharedStyles.neonGlow} border-0 `,
+    downvote: `bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white ${sharedStyles.neonGlow} border-0 `,
+    upvoteOutline: `hover:bg-green-50 hover:text-green-600 hover:border-green-300 dark:hover:bg-green-900/30 ${sharedStyles.neonBorder} `,
+    downvoteOutline: `hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-900/30 ${sharedStyles.neonBorder} `,
   }
 } as const;

@@ -11,31 +11,33 @@ import Link from "next/link";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
+  let imagesData: Awaited<ReturnType<typeof loadHomepageImages>>["imagesData"];
+  let tagsByImage: Awaited<ReturnType<typeof loadHomepageImages>>["tagsByImage"];
+  let commentCountMap: Awaited<ReturnType<typeof loadHomepageImages>>["commentCountMap"];
+  let userVotes: Awaited<ReturnType<typeof loadHomepageImages>>["userVotes"];
+
   try {
-    // Get images with related data
-    const imagesData = await db
-      .select({
-        id: images.id,
-        title: images.title,
-        description: images.description,
-        url: images.url,
-        upvotes: images.upvotes,
-        downvotes: images.downvotes,
-        createdAt: images.createdAt,
-        uploadedBy: images.uploadedBy,
-        uploaderName: users.name,
-        uploaderImage: users.image,
-      })
-      .from(images)
-      .leftJoin(users, eq(images.uploadedBy, users.id))
-      .orderBy(desc(images.createdAt))
-      .limit(20);
+    ({ imagesData, tagsByImage, commentCountMap, userVotes } = await loadHomepageImages());
+  } catch (error) {
+    console.error("Error loading homepage:", error);
 
-    // Fetch metadata for all images
-    const { tagsByImage, commentCountMap, userVotes } = await fetchImageMetadata(imagesData);
-
+    // Return a fallback UI instead of throwing
     return (
       <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12 bg-destructive/10 rounded-lg border border-destructive/20">
+          <p className="text-lg text-destructive mb-4">
+            Oops! Something went wrong loading the images.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Please try refreshing the page. If the problem persists, contact support.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
         {/* Hero section for empty state or main content */}
         {imagesData.length === 0 ? (
           <div className="text-center py-24 relative">
@@ -122,21 +124,30 @@ export default async function Home() {
         )}
       </div>
     );
-  } catch (error) {
-    console.error("Error loading homepage:", error);
-    
-    // Return a fallback UI instead of throwing
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-12 bg-destructive/10 rounded-lg border border-destructive/20">
-          <p className="text-lg text-destructive mb-4">
-            Oops! Something went wrong loading the images.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Please try refreshing the page. If the problem persists, contact support.
-          </p>
-        </div>
-      </div>
-    );
-  }
+}
+
+async function loadHomepageImages() {
+  // Get images with related data
+  const imagesData = await db
+    .select({
+      id: images.id,
+      title: images.title,
+      description: images.description,
+      url: images.url,
+      upvotes: images.upvotes,
+      downvotes: images.downvotes,
+      createdAt: images.createdAt,
+      uploadedBy: images.uploadedBy,
+      uploaderName: users.name,
+      uploaderImage: users.image,
+    })
+    .from(images)
+    .leftJoin(users, eq(images.uploadedBy, users.id))
+    .orderBy(desc(images.createdAt))
+    .limit(20);
+
+  // Fetch metadata for all images
+  const { tagsByImage, commentCountMap, userVotes } = await fetchImageMetadata(imagesData);
+
+  return { imagesData, tagsByImage, commentCountMap, userVotes };
 }
