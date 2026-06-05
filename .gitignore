@@ -46,3 +46,4 @@ next-env.d.ts
 INSTRUCTIONS.md
 
 /public/uploads/
+.vscode/
