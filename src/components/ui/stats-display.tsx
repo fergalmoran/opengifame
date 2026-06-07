@@ -1,6 +1,6 @@
 'use client';
 
-import { cn, sharedStyles } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface StatsDisplayProps {
@@ -17,14 +17,13 @@ export function StatsDisplay({
   label,
   size = 'md',
   showTrend = true,
-  animated = false,
   className
 }: StatsDisplayProps) {
   const getVariantClasses = () => {
     if (value > 0) {
-      return 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800';
+      return 'text-primary bg-primary/10 border-primary/20';
     } else if (value < 0) {
-      return 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800';
+      return 'text-destructive bg-destructive/10 border-destructive/20';
     } else {
       return 'text-muted-foreground bg-muted border-border';
     }
@@ -57,10 +56,9 @@ export function StatsDisplay({
   };
 
   const classes = cn(
-    'inline-flex items-center space-x-1 rounded-full border font-medium transition-all duration-200',
+    'inline-flex items-center space-x-1 rounded-full border font-medium transition-colors',
     getSizeClasses(),
     getVariantClasses(),
-    animated && `${sharedStyles.hoverLift} animate-pulse`,
     className
   );
 

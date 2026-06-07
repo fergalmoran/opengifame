@@ -87,19 +87,6 @@ function SignInForm() {
     }
   };
 
-  const getProviderColor = (providerId: string) => {
-    switch (providerId) {
-      case "github":
-        return "bg-gray-800 hover:bg-gray-700 text-white";
-      case "google":
-        return "bg-red-600 hover:bg-red-700 text-white";
-      case "facebook":
-        return "bg-blue-600 hover:bg-blue-700 text-white";
-      default:
-        return "bg-primary hover:bg-primary/90";
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
@@ -182,10 +169,8 @@ function SignInForm() {
                   <Button
                     key={provider.id}
                     onClick={() => handleSignIn(provider.id)}
-                    className={`w-full flex items-center justify-center space-x-2 ${getProviderColor(
-                      provider.id
-                    )}`}
-                    variant="default"
+                    className="w-full flex items-center justify-center space-x-2"
+                    variant="outline"
                   >
                     {getProviderIcon(provider.id)}
                     <span>Continue with {provider.name}</span>

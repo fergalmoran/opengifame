@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSession } from 'next-auth/react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
-import { sharedStyles, componentStyles } from '@/lib/utils';
 
 interface VotingButtonsProps {
   imageId: string;
@@ -28,14 +27,12 @@ export function VotingButtons({
   const [downvotes, setDownvotes] = useState(initialDownvotes);
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(initialUserVote);
   const [isVoting, setIsVoting] = useState(false);
-  const [voteAnimation, setVoteAnimation] = useState<'up' | 'down' | null>(null);
 
   const handleVote = async (isUpvote: boolean) => {
     if (!session?.user?.id || isVoting) return;
 
     setIsVoting(true);
-    setVoteAnimation(isUpvote ? 'up' : 'down');
-    
+
     try {
       const response = await fetch('/api/images/vote', {
         method: 'POST',
@@ -58,7 +55,6 @@ export function VotingButtons({
       console.error('Error voting:', error);
     } finally {
       setIsVoting(false);
-      setTimeout(() => setVoteAnimation(null), 300);
     }
   };
 
@@ -87,12 +83,12 @@ export function VotingButtons({
       
     return (
       <div className={`${containerClass} text-sm text-muted-foreground`}>
-        <div className="flex items-center space-x-1 px-3 py-2 rounded-full bg-muted/50 backdrop-blur-sm">
-          <ArrowUp className="h-3 w-3 text-green-600" />
+        <div className="flex items-center space-x-1 px-3 py-2 rounded-full bg-muted/50">
+          <ArrowUp className="h-3 w-3" />
           <span className="text-xs font-medium">{upvotes}</span>
         </div>
-        <div className="flex items-center space-x-1 px-3 py-2 rounded-full bg-muted/50 backdrop-blur-sm">
-          <ArrowDown className="h-3 w-3 text-red-600" />
+        <div className="flex items-center space-x-1 px-3 py-2 rounded-full bg-muted/50">
+          <ArrowDown className="h-3 w-3" />
           <span className="text-xs font-medium">{downvotes}</span>
         </div>
         {layout === 'vertical' && (
@@ -113,35 +109,19 @@ export function VotingButtons({
         size={getButtonSize()}
         onClick={() => handleVote(true)}
         disabled={isVoting}
-        className={`${sharedStyles.hoverLift} relative overflow-hidden ${
-          userVote === 'up' 
-            ? componentStyles.voting.upvote
-            : componentStyles.voting.upvoteOutline
-        } ${voteAnimation === 'up' ? 'animate-pulse scale-110' : ''}`}
       >
-        {voteAnimation === 'up' && (
-          <div className="absolute inset-0 bg-green-400/30 animate-ping rounded" />
-        )}
-        <ArrowUp className={`${getIconSize()} mr-1 relative z-10`} />
-        <span className="relative z-10">{upvotes}</span>
+        <ArrowUp className={`${getIconSize()} mr-1`} />
+        <span>{upvotes}</span>
       </Button>
-      
+
       <Button
         variant={userVote === 'down' ? 'default' : 'outline'}
         size={getButtonSize()}
         onClick={() => handleVote(false)}
         disabled={isVoting}
-        className={`${sharedStyles.hoverLift} relative overflow-hidden ${
-          userVote === 'down' 
-            ? componentStyles.voting.downvote
-            : componentStyles.voting.downvoteOutline
-        } ${voteAnimation === 'down' ? 'animate-pulse scale-110' : ''}`}
       >
-        {voteAnimation === 'down' && (
-          <div className="absolute inset-0 bg-red-400/30 animate-ping rounded" />
-        )}
-        <ArrowDown className={`${getIconSize()} mr-1 relative z-10`} />
-        <span className="relative z-10">{downvotes}</span>
+        <ArrowDown className={`${getIconSize()} mr-1`} />
+        <span>{downvotes}</span>
       </Button>
     </div>
   );

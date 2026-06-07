@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { usePasteUpload } from '@/components/paste-upload-provider';
 import { Upload, X } from 'lucide-react';
 
 export default function UploadPage() {
@@ -18,6 +20,26 @@ export default function UploadPage() {
   const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const { pastedFile, clearPastedFile } = usePasteUpload();
+
+  // Read a File into the form (sets the file + its data-URL preview). State is
+  // updated from the reader's async callback, never synchronously in an effect.
+  const loadFile = useCallback((selectedFile: File, onLoaded?: () => void) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFile(selectedFile);
+      setPreview(reader.result as string);
+      onLoaded?.();
+    };
+    reader.readAsDataURL(selectedFile);
+  }, []);
+
+  // Consume an image pasted anywhere in the app (see PasteUploadProvider).
+  useEffect(() => {
+    if (pastedFile) {
+      loadFile(pastedFile, clearPastedFile);
+    }
+  }, [pastedFile, loadFile, clearPastedFile]);
 
   if (!session) {
     return (
@@ -37,10 +59,7 @@ export default function UploadPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      const reader = new FileReader();
-      reader.onload = () => setPreview(reader.result as string);
-      reader.readAsDataURL(selectedFile);
+      loadFile(selectedFile);
     }
   };
 
@@ -204,19 +223,17 @@ export default function UploadPage() {
                   {tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border"
-                        >
+                        <Badge key={index} variant="secondary" className="gap-1">
                           {tag}
                           <button
                             type="button"
                             onClick={() => removeTag(tag)}
-                            className="ml-1.5 h-3 w-3 rounded-full inline-flex items-center justify-center hover:bg-primary/20"
+                            aria-label={`Remove tag ${tag}`}
+                            className="inline-flex items-center justify-center rounded-full hover:text-foreground"
                           >
-                            <X className="h-2 w-2" />
+                            <X className="h-3 w-3" />
                           </button>
-                        </span>
+                        </Badge>
                       ))}
                     </div>
                   )}

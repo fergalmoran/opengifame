@@ -153,9 +153,9 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
             {videoError && (
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                 <div className="text-center text-white space-y-2">
-                  <FileVideo className="h-12 w-12 mx-auto text-yellow-400" />
+                  <FileVideo className="h-12 w-12 mx-auto text-destructive" />
                   <div className="text-sm font-medium">Video Playback Failed</div>
-                  <div className="text-xs text-gray-300 max-w-sm">
+                  <div className="text-xs text-white/70 max-w-sm">
                     {videoError}
                   </div>
                 </div>

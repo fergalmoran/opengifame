@@ -63,7 +63,7 @@ export default function GDPRPage() {
             a: ({ href, children }) => (
               <a
                 href={href}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-primary hover:underline"
                 target={href?.startsWith("http") ? "_blank" : undefined}
                 rel={
                   href?.startsWith("http") ? "noopener noreferrer" : undefined

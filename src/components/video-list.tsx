@@ -140,7 +140,7 @@ export function VideoList({ onVideoSelect }: VideoListProps) {
           <Card key={index} className="cursor-pointer hover:bg-accent/50 transition-colors">
             <CardContent className="p-3" onClick={() => handleVideoSelect(video)}>
               <div className="flex items-start gap-3">
-                <Video className="h-5 w-5 mt-0.5 text-blue-500 flex-shrink-0" />
+                <Video className="h-5 w-5 mt-0.5 text-muted-foreground shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate" title={video.name}>
                     {video.name}

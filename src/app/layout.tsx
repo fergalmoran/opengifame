@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '@/components/auth-provider';
 import { ThemeProvider } from '@/components/theme-provider';
+import { PasteUploadProvider } from '@/components/paste-upload-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { cn } from "@/lib/utils";
@@ -45,9 +46,11 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <AuthProvider>
-            <Header />
-            <main className="flex-grow">{children}</main>
-            <Footer />
+            <PasteUploadProvider>
+              <Header />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </PasteUploadProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

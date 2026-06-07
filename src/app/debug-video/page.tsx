@@ -70,17 +70,17 @@ export default function VideoDebugPage() {
       <h1 className="text-2xl font-bold mb-4">Video Duration Debug Test</h1>
       
       <div className="mb-4">
-        <video 
+        <video
           ref={videoRef}
-          controls 
+          controls
           width="800"
-          className="border border-gray-300"
+          className="border border-border"
         >
           <source src="/uploads/test-10min-video.mp4" type="video/mp4" />
         </video>
       </div>
 
-      <div className="bg-gray-100 p-4 rounded">
+      <div className="bg-muted p-4 rounded">
         <h2 className="text-lg font-semibold mb-2">Debug Output:</h2>
         <div className="max-h-96 overflow-y-auto">
           {debugMessages.map((message, index) => (
@@ -91,7 +91,7 @@ export default function VideoDebugPage() {
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-gray-600">
+      <div className="mt-4 text-sm text-muted-foreground">
         <p>This page tests video duration detection for the 10-minute test video.</p>
         <p>Expected duration: 600 seconds (10 minutes)</p>
       </div>

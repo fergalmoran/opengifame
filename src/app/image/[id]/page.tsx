@@ -55,8 +55,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
                 <img
                   src={image.url}
                   alt={image.title || 'Uploaded image'}
-                  className="max-w-full h-auto rounded-lg shadow-lg mx-auto"
-                  style={{ maxHeight: '80vh' }}
+                  className="max-w-full max-h-[80vh] h-auto rounded-lg shadow-lg mx-auto"
                 />
               </div>
             </div>
