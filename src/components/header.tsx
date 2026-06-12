@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
 import { OpenGifameLogo } from "./opengifame-logo";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Upload, User, LogOut, ChevronDown, LogIn } from "lucide-react";
-import { getUserInitials } from "@/lib/user-utils";
 
 export function Header() {
   const { data: session } = useSession();
@@ -68,25 +67,26 @@ export function Header() {
                   size="sm"
                   className="flex items-center space-x-1 p-1"
                 >
-                  <Avatar className="h-8 w-8 border">
-                    <AvatarImage
-                      src={session.user?.image || undefined}
-                      alt="Profile"
-                    />
-                    <AvatarFallback>
-                      {getUserInitials(session.user?.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <UserAvatar
+                    src={session.user?.image}
+                    name={session.user?.name}
+                    size={32}
+                  />
                   <ChevronDown className="h-3 w-3 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
+                {session.user?.id && (
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={`/user/${session.user.id}`}
+                      className="flex items-center"
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => signOut()}

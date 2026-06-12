@@ -24,14 +24,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Security check - prevent directory traversal
-    const normalizedPath = path.normalize(folderPath);
-    if (normalizedPath.includes('..')) {
+    // Security check - prevent directory traversal (check raw input before normalize strips ..)
+    if (folderPath.includes('..')) {
       return NextResponse.json(
-        { error: 'Invalid path' }, 
+        { error: 'Invalid path' },
         { status: 400 }
       );
     }
+    const normalizedPath = path.normalize(folderPath);
 
     let files: string[];
     try {

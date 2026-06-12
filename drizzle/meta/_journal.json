@@ -15,6 +15,20 @@
       "when": 1751747267016,
       "tag": "0001_ordinary_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780798726022,
+      "tag": "0002_thankful_madame_masque",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780804698570,
+      "tag": "0003_free_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,7 @@ export default async function TrendingPage() {
   const imagesData = await db
     .select({
       id: images.id,
+      slug: images.slug,
       title: images.title,
       description: images.description,
       url: images.url,
@@ -53,6 +54,7 @@ export default async function TrendingPage() {
           <ImageCard
             key={image.id}
             id={image.id}
+            slug={image.slug}
             title={image.title}
             description={image.description || undefined}
             url={image.url}
@@ -60,6 +62,7 @@ export default async function TrendingPage() {
             downvotes={image.downvotes}
             createdAt={image.createdAt}
             uploadedBy={{
+              id: image.uploadedBy || undefined,
               name: image.uploaderName || undefined,
               image: image.uploaderImage || undefined,
             }}

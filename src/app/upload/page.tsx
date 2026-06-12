@@ -106,7 +106,7 @@ export default function UploadPage() {
 
       if (response.ok) {
         const result = await response.json();
-        router.push(`/image/${result.id}`);
+        router.push(`/image/${result.slug}`);
       } else {
         alert('Upload failed');
       }

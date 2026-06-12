@@ -6,6 +6,8 @@ import { images, tags, imageTags } from '@/lib/db/schema';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { eq } from 'drizzle-orm';
+import { generateRandomTitle } from '@/lib/title-utils';
+import { generateUniqueSlug } from '@/lib/slug-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,11 +57,13 @@ export async function POST(request: NextRequest) {
     // Create image record
     console.log('Creating image record in database...');
     const imageUrl = `/uploads/${filename}`;
-    const imageTitle = title || file.name.split('.')[0]; // Use filename without extension as fallback
+    const imageTitle = title?.trim() || generateRandomTitle(); // Generate a fun random title when none is provided
+    const slug = await generateUniqueSlug(imageTitle); // Lowercase, unique, URL-friendly identifier
     const [newImage] = await db
       .insert(images)
       .values({
         title: imageTitle,
+        slug,
         description: description || null,
         filename,
         originalName: file.name,
@@ -111,6 +115,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       id: newImage.id,
+      slug: newImage.slug,
       url: imageUrl,
       message: 'Image uploaded successfully',
     });

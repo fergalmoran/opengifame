@@ -11,6 +11,7 @@ import { formatHumanDate } from '@/lib/date-utils';
 
 interface ImageCardProps {
   id: string;
+  slug: string;
   title: string;
   description?: string;
   url: string;
@@ -18,6 +19,7 @@ interface ImageCardProps {
   downvotes: number;
   createdAt: Date;
   uploadedBy: {
+    id?: string;
     name?: string;
     image?: string;
   };
@@ -31,6 +33,7 @@ interface ImageCardProps {
 
 export function ImageCard({
   id,
+  slug,
   title,
   description,
   url,
@@ -50,7 +53,7 @@ export function ImageCard({
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <Link
-            href={`/image/${id}`}
+            href={`/image/${slug}`}
             className="text-lg font-semibold hover:text-primary transition-colors"
           >
             {title}
@@ -63,7 +66,7 @@ export function ImageCard({
       </CardHeader>
 
       <CardContent className="p-0">
-        <Link href={`/image/${id}`}>
+        <Link href={`/image/${slug}`}>
           <div className="relative aspect-video w-full overflow-hidden">
             <Image
               src={url}
@@ -88,7 +91,7 @@ export function ImageCard({
 
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" asChild>
-              <Link href={`/image/${id}`}>
+              <Link href={`/image/${slug}`}>
                 <MessageCircle className="mr-1 h-4 w-4" />
                 {commentCount}
               </Link>
@@ -101,7 +104,16 @@ export function ImageCard({
             <Calendar className="h-3 w-3" />
             <span>{formatHumanDate(createdAt)}</span>
           </div>
-          <span className="font-medium">by {uploadedBy.name}</span>
+          {uploadedBy.id ? (
+            <Link
+              href={`/user/${uploadedBy.id}`}
+              className="font-medium hover:text-primary transition-colors"
+            >
+              by {uploadedBy.name}
+            </Link>
+          ) : (
+            <span className="font-medium">by {uploadedBy.name}</span>
+          )}
         </div>
 
         {tags.length > 0 && (

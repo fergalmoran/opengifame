@@ -9,6 +9,7 @@ export const users = pgTable('user', {
   email: text('email').notNull(),
   emailVerified: timestamp('emailVerified', { mode: 'date' }),
   image: text('image'),
+  bio: text('bio'),
 });
 
 export const accounts = pgTable(
@@ -58,6 +59,7 @@ export const verificationTokens = pgTable(
 // Image sharing specific tables
 export const images = pgTable('images', {
   id: uuid('id').defaultRandom().primaryKey(),
+  slug: text('slug').notNull().unique(),
   title: text('title').notNull(),
   description: text('description'),
   filename: text('filename').notNull(),

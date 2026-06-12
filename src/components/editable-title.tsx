@@ -19,7 +19,7 @@ export function EditableTitle({ imageId, initialTitle, imageOwnerId }: EditableT
 
   const isOwner = session?.user?.id === imageOwnerId;
 
-  const handleDoubleClick = () => {
+  const handleClick = () => {
     if (!isOwner) return;
     setIsEditing(true);
     setEditValue(title);
@@ -74,9 +74,10 @@ export function EditableTitle({ imageId, initialTitle, imageOwnerId }: EditableT
         value={editValue}
         onChange={(e) => setEditValue(e.target.value)}
         onKeyDown={handleKeyDown}
+        onBlur={handleSave}
         disabled={isUpdating}
         autoFocus
-        className="text-2xl font-bold"
+        className="flex-1 text-2xl font-bold"
         placeholder="Enter title..."
       />
     );
@@ -84,13 +85,13 @@ export function EditableTitle({ imageId, initialTitle, imageOwnerId }: EditableT
 
   return (
     <h1
-      className={`text-2xl font-bold ${
-        isOwner 
-          ? 'cursor-pointer hover:bg-muted/50 p-2 rounded transition-colors' 
+      className={`flex-1 text-2xl font-bold ${
+        isOwner
+          ? 'cursor-pointer hover:bg-muted/50 p-2 rounded transition-colors'
           : ''
       }`}
-      onDoubleClick={handleDoubleClick}
-      title={isOwner ? 'Double-click to edit title' : undefined}
+      onClick={handleClick}
+      title={isOwner ? 'Click to edit title' : undefined}
     >
       {title}
     </h1>

@@ -75,6 +75,7 @@ export default async function Home() {
                 <ImageCard
                   key={image.id}
                   id={image.id}
+                  slug={image.slug}
                   title={image.title}
                   description={image.description || undefined}
                   url={image.url}
@@ -82,6 +83,7 @@ export default async function Home() {
                   downvotes={image.downvotes}
                   createdAt={image.createdAt}
                   uploadedBy={{
+                    id: image.uploadedBy,
                     name: image.uploaderName || undefined,
                     image: image.uploaderImage || undefined,
                   }}
@@ -109,6 +111,7 @@ async function loadHomepageImages() {
   const imagesData = await db
     .select({
       id: images.id,
+      slug: images.slug,
       title: images.title,
       description: images.description,
       url: images.url,
