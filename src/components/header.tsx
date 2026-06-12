@@ -82,7 +82,7 @@ export function Header() {
                 {(session.user?.slug ?? session.user?.id) && (
                   <DropdownMenuItem asChild>
                     <Link
-                      href={`/user/${session.user.slug ?? session.user.id}`}
+                      href={`/@${session.user.slug ?? session.user.id}`}
                       className="flex items-center"
                     >
                       <User className="mr-2 h-4 w-4" />

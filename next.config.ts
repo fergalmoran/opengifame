@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['opengifame.dev.fergl.ie'],
+  async rewrites() {
+    return [
+      { source: '/@:slug', destination: '/user/:slug' },
+    ];
+  },
   images: {
     // Allow next/image to optimize avatars served by the OAuth providers.
     // Locally uploaded images (/uploads/*) are same-origin and need no entry.
