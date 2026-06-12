@@ -56,7 +56,7 @@ export default function RootLayout({
           <AuthProvider>
             <PasteUploadProvider>
               <Header />
-              <main className="flex-grow">{children}</main>
+              <main className="grow">{children}</main>
               <Footer />
             </PasteUploadProvider>
           </AuthProvider>

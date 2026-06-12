@@ -19,6 +19,7 @@ export default async function TrendingPage() {
       uploadedBy: users.id,
       uploaderName: users.name,
       uploaderImage: users.image,
+      uploaderSlug: users.slug,
       score: sql<number>`${images.upvotes} - ${images.downvotes}`,
     })
     .from(images)
@@ -63,6 +64,7 @@ export default async function TrendingPage() {
             createdAt={image.createdAt}
             uploadedBy={{
               id: image.uploadedBy || undefined,
+              slug: image.uploaderSlug || undefined,
               name: image.uploaderName || undefined,
               image: image.uploaderImage || undefined,
             }}

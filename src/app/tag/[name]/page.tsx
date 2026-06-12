@@ -30,6 +30,7 @@ export default async function TagPage({ params }: TagPageProps) {
       uploadedBy: images.uploadedBy,
       uploaderName: users.name,
       uploaderImage: users.image,
+      uploaderSlug: users.slug,
     })
     .from(imageTags)
     .innerJoin(tags, eq(imageTags.tagId, tags.id))
@@ -73,6 +74,7 @@ export default async function TagPage({ params }: TagPageProps) {
               createdAt={image.createdAt}
               uploadedBy={{
                 id: image.uploadedBy,
+                slug: image.uploaderSlug || undefined,
                 name: image.uploaderName || undefined,
                 image: image.uploaderImage || undefined,
               }}

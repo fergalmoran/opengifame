@@ -1,0 +1,7 @@
+.git
+.next
+node_modules
+public/uploads
+.env*
+*.local
+bun.lock.bak

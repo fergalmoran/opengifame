@@ -20,6 +20,7 @@ interface ImageCardProps {
   createdAt: Date;
   uploadedBy: {
     id?: string;
+    slug?: string;
     name?: string;
     image?: string;
   };
@@ -104,9 +105,9 @@ export function ImageCard({
             <Calendar className="h-3 w-3" />
             <span>{formatHumanDate(createdAt)}</span>
           </div>
-          {uploadedBy.id ? (
+          {(uploadedBy.slug ?? uploadedBy.id) ? (
             <Link
-              href={`/user/${uploadedBy.id}`}
+              href={`/user/${uploadedBy.slug ?? uploadedBy.id}`}
               className="font-medium hover:text-primary transition-colors"
             >
               by {uploadedBy.name}

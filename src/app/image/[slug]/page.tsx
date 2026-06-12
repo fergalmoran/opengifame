@@ -82,7 +82,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
 
             {/* Uploader */}
             <Link
-              href={`/user/${image.uploadedBy}`}
+              href={`/user/${image.uploaderSlug ?? image.uploadedBy}`}
               className="inline-flex items-center gap-3 group w-fit"
             >
               <UserAvatar
@@ -154,6 +154,7 @@ async function loadImagePageData(params: ImagePageProps['params']) {
       uploaderName: users.name,
       uploaderEmail: users.email,
       uploaderImage: users.image,
+      uploaderSlug: users.slug,
     })
     .from(images)
     .leftJoin(users, eq(images.uploadedBy, users.id))

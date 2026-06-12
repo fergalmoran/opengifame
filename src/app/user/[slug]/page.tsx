@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
 import { images, users } from '@/lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, or } from 'drizzle-orm';
 import { UserAvatar } from '@/components/user-avatar';
 import { ImageCard } from '@/components/image-card';
 import { EditProfileDialog } from '@/components/edit-profile-dialog';
@@ -10,7 +10,7 @@ import { getServerAuthSession } from '@/lib/server-auth';
 
 interface ProfilePageProps {
   params: Promise<{
-    id: string;
+    slug: string;
   }>;
 }
 
@@ -18,18 +18,20 @@ interface ProfilePageProps {
 export const dynamic = 'force-dynamic';
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { id } = await params;
+  const { slug } = await params;
   const session = await getServerAuthSession();
 
+  // Support both slug-based URLs (new) and id-based URLs (legacy links) transparently.
   const userResult = await db
     .select({
       id: users.id,
+      slug: users.slug,
       name: users.name,
       image: users.image,
       bio: users.bio,
     })
     .from(users)
-    .where(eq(users.id, id))
+    .where(or(eq(users.slug, slug), eq(users.id, slug)))
     .limit(1);
 
   if (userResult.length === 0) {
@@ -52,6 +54,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
       uploadedBy: images.uploadedBy,
       uploaderName: users.name,
       uploaderImage: users.image,
+      uploaderSlug: users.slug,
     })
     .from(images)
     .leftJoin(users, eq(images.uploadedBy, users.id))
@@ -90,6 +93,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               </p>
             )
           )}
+          {profile.slug && (
+            <p className="text-sm text-muted-foreground mt-1">@{profile.slug}</p>
+          )}
           <p className="text-sm text-muted-foreground mt-3">
             {imagesData.length} image{imagesData.length === 1 ? '' : 's'}
           </p>
@@ -120,6 +126,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               createdAt={image.createdAt}
               uploadedBy={{
                 id: image.uploadedBy,
+                slug: image.uploaderSlug || undefined,
                 name: image.uploaderName || undefined,
                 image: image.uploaderImage || undefined,
               }}

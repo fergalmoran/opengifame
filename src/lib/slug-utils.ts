@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { images } from '@/lib/db/schema';
+import { images, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 /**
@@ -35,6 +35,32 @@ export async function generateUniqueSlug(title: string): Promise<string> {
   let counter = 2;
 
   while (await slugExists(slug)) {
+    slug = `${base}-${counter}`;
+    counter++;
+  }
+
+  return slug;
+}
+
+async function userSlugExists(slug: string): Promise<boolean> {
+  const existing = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.slug, slug))
+    .limit(1);
+  return existing.length > 0;
+}
+
+/**
+ * Build a URL-safe slug from a display name that is guaranteed unique
+ * across the users table (e.g. "jane-doe", "jane-doe-2").
+ */
+export async function generateUniqueUserSlug(name: string): Promise<string> {
+  const base = slugify(name) || 'user';
+  let slug = base;
+  let counter = 2;
+
+  while (await userSlugExists(slug)) {
     slug = `${base}-${counter}`;
     counter++;
   }

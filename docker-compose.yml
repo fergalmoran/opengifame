@@ -1,0 +1,44 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:changeme@db:5432/opengifame
+      NEXTAUTH_URL: http://localhost:3000
+      # Generate a strong random secret: openssl rand -base64 32
+      NEXTAUTH_SECRET: changeme
+      # OAuth provider credentials (fill in or move to a .env file)
+      # GITHUB_ID: ""
+      # GITHUB_SECRET: ""
+      # GOOGLE_CLIENT_ID: ""
+      # GOOGLE_CLIENT_SECRET: ""
+      # FACEBOOK_CLIENT_ID: ""
+      # FACEBOOK_CLIENT_SECRET: ""
+    volumes:
+      # Named volume (default). To use a bind mount instead, replace with:
+      #   - ./uploads:/app/public/uploads
+      - uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: opengifame
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d opengifame"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  uploads:
+  pgdata:

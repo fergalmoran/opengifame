@@ -7,6 +7,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // TODO: Uncomment when database authentication is implemented
 // import bcrypt from 'bcryptjs';
 import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { generateUniqueUserSlug } from "@/lib/slug-utils";
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
@@ -47,11 +50,37 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   callbacks: {
-    session({ session, user }) {
+    async session({ session, user }) {
       if (session.user && user) {
         session.user.id = user.id;
+
+        // The DrizzleAdapter strips non-standard fields before passing `user`
+        // to callbacks, so we must query slug directly from the DB.
+        const [row] = await db
+          .select({ slug: users.slug })
+          .from(users)
+          .where(eq(users.id, user.id))
+          .limit(1);
+
+        let slug = row?.slug ?? undefined;
+
+        if (!slug) {
+          // Backfill for users who existed before slugs were introduced.
+          const base = user.name || user.email?.split('@')[0] || 'user';
+          slug = await generateUniqueUserSlug(base);
+          await db.update(users).set({ slug }).where(eq(users.id, user.id));
+        }
+
+        session.user.slug = slug;
       }
       return session;
+    },
+  },
+  events: {
+    async createUser({ user }) {
+      const base = user.name || user.email?.split('@')[0] || 'user';
+      const slug = await generateUniqueUserSlug(base);
+      await db.update(users).set({ slug }).where(eq(users.id, user.id));
     },
   },
 };

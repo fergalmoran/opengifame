@@ -84,6 +84,7 @@ export default async function Home() {
                   createdAt={image.createdAt}
                   uploadedBy={{
                     id: image.uploadedBy,
+                    slug: image.uploaderSlug || undefined,
                     name: image.uploaderName || undefined,
                     image: image.uploaderImage || undefined,
                   }}
@@ -121,6 +122,7 @@ async function loadHomepageImages() {
       uploadedBy: images.uploadedBy,
       uploaderName: users.name,
       uploaderImage: users.image,
+      uploaderSlug: users.slug,
     })
     .from(images)
     .leftJoin(users, eq(images.uploadedBy, users.id))
