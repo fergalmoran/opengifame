@@ -82,7 +82,7 @@ export default async function ImagePage({ params }: ImagePageProps) {
 
             {/* Uploader */}
             <Link
-              href={`/user/${image.uploaderSlug ?? image.uploadedBy}`}
+              href={`/@${image.uploaderSlug ?? image.uploadedBy}`}
               className="inline-flex items-center gap-3 group w-fit"
             >
               <UserAvatar

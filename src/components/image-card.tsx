@@ -107,7 +107,7 @@ export function ImageCard({
           </div>
           {(uploadedBy.slug ?? uploadedBy.id) ? (
             <Link
-              href={`/user/${uploadedBy.slug ?? uploadedBy.id}`}
+              href={`/@${uploadedBy.slug ?? uploadedBy.id}`}
               className="font-medium hover:text-primary transition-colors"
             >
               by {uploadedBy.name}
