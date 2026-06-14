@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['opengifame.dev.fergl.ie'],
+  output: 'standalone',
+  // Keep these as runtime externals so the standalone output includes them in
+  // node_modules rather than bundling them into webpack chunks. Required for
+  // the migration script to be able to import them at container startup.
+  serverExternalPackages: ['drizzle-orm', 'postgres'],
+allowedDevOrigins: ['opengifame.dev.fergl.ie'],
   async rewrites() {
     return [
       { source: '/@:slug', destination: '/user/:slug' },

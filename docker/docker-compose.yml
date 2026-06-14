@@ -1,10 +1,13 @@
 services:
   app:
-    build: .
+    image: ghcr.io/fergalmoran/opengifame:latest
+    # Run as the host user so uploaded files are written with host-compatible
+    # ownership. Set UID/GID in a .env file (see .env.example).
+    user: "${UID:-1000}:${GID:-1000}"
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgres://postgres:changeme@db:5432/opengifame
+      DATABASE_URL: $DATABASE_URL
       NEXTAUTH_URL: http://localhost:3000
       # Generate a strong random secret: openssl rand -base64 32
       NEXTAUTH_SECRET: changeme
@@ -16,9 +19,9 @@ services:
       # FACEBOOK_CLIENT_ID: ""
       # FACEBOOK_CLIENT_SECRET: ""
     volumes:
-      # Named volume (default). To use a bind mount instead, replace with:
-      #   - ./uploads:/app/public/uploads
-      - uploads:/app/public/uploads
+      # Bind mount so uploaded files land on the host with the UID/GID above.
+      # Create this directory before first run: mkdir -p uploads
+      - ./uploads:/app/public/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -40,5 +43,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  uploads:
   pgdata:

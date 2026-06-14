@@ -6,7 +6,7 @@ const connectionString = process.env.DATABASE_URL || 'postgres://postgres:hackme
 
 // Handle connection string more robustly
 const client = postgres(connectionString, {
-  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
+  ssl: process.env.DB_SSL === 'false' ? false : process.env.NODE_ENV === 'production' ? 'require' : false,
   max: 1, // Limit connections for serverless
 });
 
