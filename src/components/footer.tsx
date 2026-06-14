@@ -21,13 +21,13 @@ export function Footer() {
 
           <nav className="flex gap-6 lg:gap-8">
             <Link
-              href="/privacy"
+              href="/docs/privacy"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Privacy
             </Link>
             <Link
-              href="/gdpr"
+              href="/docs/gdpr"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               GDPR

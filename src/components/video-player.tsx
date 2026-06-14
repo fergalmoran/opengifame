@@ -23,6 +23,9 @@ type LoadState = 'idle' | 'preparing' | 'ready' | 'error';
 export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<HlsType | null>(null);
+  const isDragging = useRef(false);
+  const wasPlaying = useRef(false);
+  const pendingSeek = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -129,10 +132,24 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
     }
   };
 
-  const handleSeek = (time: number) => {
+  const handleScrubStart = () => {
+    isDragging.current = true;
+    wasPlaying.current = isPlaying;
+    // Pause while scrubbing so hls.js isn't also trying to advance playback
+    if (videoRef.current && isPlaying) videoRef.current.pause();
+  };
+
+  const handleScrubMove = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const t = parseFloat(e.target.value);
+    pendingSeek.current = t;
+    setCurrentTime(t); // update display only — do NOT touch videoRef yet
+  };
+
+  const handleScrubEnd = () => {
+    isDragging.current = false;
     if (videoRef.current) {
-      videoRef.current.currentTime = time;
-      setCurrentTime(time);
+      videoRef.current.currentTime = pendingSeek.current;
+      if (wasPlaying.current) videoRef.current.play();
     }
   };
 
@@ -176,7 +193,10 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
             <video
               ref={videoRef}
               className="w-full h-auto max-h-96"
-              onTimeUpdate={() => videoRef.current && setCurrentTime(videoRef.current.currentTime)}
+              onTimeUpdate={() => {
+                if (!isDragging.current && videoRef.current)
+                  setCurrentTime(videoRef.current.currentTime);
+              }}
               onLoadedMetadata={handleLoadedMetadata}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
@@ -210,7 +230,9 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
               max={duration || 1}
               step={0.1}
               value={currentTime}
-              onChange={(e) => handleSeek(parseFloat(e.target.value))}
+              onPointerDown={handleScrubStart}
+              onChange={handleScrubMove}
+              onPointerUp={handleScrubEnd}
               className="w-full accent-primary cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               disabled={!isReady}
             />

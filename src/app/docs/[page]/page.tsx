@@ -1,17 +1,43 @@
 import { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { notFound } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy - OpenGifame',
-  description: 'Privacy policy for OpenGifame image sharing platform',
-};
+interface Props {
+  params: Promise<{ page: string }>;
+}
 
-export default function PrivacyPage() {
-  // Read the markdown file
-  const markdownPath = join(process.cwd(), 'docs', 'PRIVACY.md');
-  const markdownContent = readFileSync(markdownPath, 'utf8');
+function getDocPath(page: string) {
+  return join(process.cwd(), 'docs', `${page.toUpperCase()}.md`);
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { page } = await params;
+  const slug = page.toUpperCase();
+  const titles: Record<string, string> = {
+    PRIVACY: 'Privacy Policy - OpenGifame',
+    GDPR: 'GDPR Compliance - OpenGifame',
+  };
+  const descriptions: Record<string, string> = {
+    PRIVACY: 'Privacy policy for OpenGifame image sharing platform',
+    GDPR: 'GDPR compliance guide and data protection rights for OpenGifame users',
+  };
+  return {
+    title: titles[slug] ?? `${slug} - OpenGifame`,
+    description: descriptions[slug],
+  };
+}
+
+export default async function DocsPage({ params }: Props) {
+  const { page } = await params;
+  const docPath = getDocPath(page);
+
+  if (!existsSync(docPath)) {
+    notFound();
+  }
+
+  const markdownContent = readFileSync(docPath, 'utf8');
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -27,6 +53,9 @@ export default function PrivacyPage() {
             h3: ({ children }) => (
               <h3 className="text-xl font-medium mt-6 mb-3 text-foreground">{children}</h3>
             ),
+            h4: ({ children }) => (
+              <h4 className="text-lg font-medium mt-4 mb-2 text-foreground">{children}</h4>
+            ),
             p: ({ children }) => (
               <p className="mb-4 text-muted-foreground leading-relaxed">{children}</p>
             ),
@@ -36,9 +65,7 @@ export default function PrivacyPage() {
             ol: ({ children }) => (
               <ol className="list-decimal pl-6 mb-4 text-muted-foreground">{children}</ol>
             ),
-            li: ({ children }) => (
-              <li className="mb-2">{children}</li>
-            ),
+            li: ({ children }) => <li className="mb-2">{children}</li>,
             strong: ({ children }) => (
               <strong className="font-semibold text-foreground">{children}</strong>
             ),
@@ -52,13 +79,14 @@ export default function PrivacyPage() {
                 {children}
               </a>
             ),
-            hr: () => (
-              <hr className="my-8 border-border" />
-            ),
+            hr: () => <hr className="my-8 border-border" />,
             blockquote: ({ children }) => (
               <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
                 {children}
               </blockquote>
+            ),
+            code: ({ children }) => (
+              <code className="bg-muted px-2 py-1 rounded text-sm font-mono">{children}</code>
             ),
           }}
         >
