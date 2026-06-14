@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Welcome to OpenGIFame ("we," "our," or "us"). We are committed to protecting your privacy and being transparent about how we collect, use, and share your information. This Privacy Policy explains our practices regarding your personal information when you use our image sharing platform.
+Welcome to OpenGifame ("we," "our," or "us"). We are committed to protecting your privacy and being transparent about how we collect, use, and share your information. This Privacy Policy explains our practices regarding your personal information when you use our image sharing platform.
 
 ## Information We Collect
 
@@ -60,7 +60,7 @@ We may share information with trusted third-party service providers who help us 
 We may disclose your information if required by law or if we believe it's necessary to:
 
 - Comply with legal processes or government requests
-- Protect the rights, property, or safety of OpenGIFame, our users, or the public
+- Protect the rights, property, or safety of OpenGifame, our users, or the public
 - Investigate potential violations of our terms of service
 
 ### Business Transfers

@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This document outlines OpenGIFame's compliance with the General Data Protection Regulation (GDPR) and your rights as a data subject. The GDPR gives you specific rights regarding your personal data, and we are committed to respecting and facilitating these rights.
+This document outlines OpenGifame's compliance with the General Data Protection Regulation (GDPR) and your rights as a data subject. The GDPR gives you specific rights regarding your personal data, and we are committed to respecting and facilitating these rights.
 
 ## Your Rights Under GDPR
 
@@ -30,7 +30,7 @@ You have the right to:
 
 **How to exercise this right:**
 
-1. Sign in to your OpenGIFame account
+1. Sign in to your OpenGifame account
 2. Go to Account Settings → Privacy & Data
 3. Click "Download My Data" to receive a complete copy of your data
 4. Alternatively, contact us at [privacy@opengifame.com] with your request
@@ -129,7 +129,7 @@ When you delete your account, we will permanently remove:
 
 #### Method 1: Self-Service Deletion (Recommended)
 
-1. **Sign in** to your OpenGIFame account
+1. **Sign in** to your OpenGifame account
 2. **Navigate** to Account Settings → Privacy & Data
 3. **Review** the "Delete Account" section warnings
 4. **Optional**: Download your data using "Export Data" button

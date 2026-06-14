@@ -4,8 +4,8 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - OpenGIFame',
-  description: 'Privacy policy for OpenGIFame image sharing platform',
+  title: 'Privacy Policy - OpenGifame',
+  description: 'Privacy policy for OpenGifame image sharing platform',
 };
 
 export default function PrivacyPage() {

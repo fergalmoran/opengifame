@@ -6,9 +6,9 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row justify-between items-center gap-4 lg:gap-8">
           <div className="text-center lg:text-left">
-            <div className="text-lg font-bold mb-2">OpenGIFame</div>
+            <div className="text-lg font-bold mb-2">OpenGifame</div>
             <div className="text-sm text-muted-foreground">
-              © 2025 OpenGIFame. All rights reserved.
+              © 2025 OpenGifame. All rights reserved.
             </div>
           </div>
 

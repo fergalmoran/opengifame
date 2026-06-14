@@ -4,9 +4,9 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 export const metadata: Metadata = {
-  title: "GDPR Compliance - OpenGIFame",
+  title: "GDPR Compliance - OpenGifame",
   description:
-    "GDPR compliance guide and data protection rights for OpenGIFame users",
+    "GDPR compliance guide and data protection rights for OpenGifame users",
 };
 
 export default function GDPRPage() {
