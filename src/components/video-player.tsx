@@ -5,7 +5,7 @@ import type HlsType from 'hls.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Square, FileVideo, Loader2 } from 'lucide-react';
+import { Play, Pause, Square, FileVideo, Loader2, Repeat } from 'lucide-react';
 
 interface VideoFile {
   name: string;
@@ -16,21 +16,26 @@ interface VideoFile {
 
 interface VideoPlayerProps {
   selectedVideo?: VideoFile;
+  onTimeChange?: (time: number) => void;
+  onDurationChange?: (duration: number) => void;
+  seekTo?: number | null;
+  loopStart?: number;
+  loopEnd?: number;
 }
 
 type LoadState = 'idle' | 'preparing' | 'ready' | 'error';
 
-export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
+export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, seekTo, loopStart = 0, loopEnd = 0 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<HlsType | null>(null);
-  const isDragging = useRef(false);
-  const wasPlaying = useRef(false);
-  const pendingSeek = useRef(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [loopEnabled, setLoopEnabled] = useState(false);
+
+  const hasLoopRange = loopEnd > loopStart;
 
   const destroyHls = useCallback(() => {
     hlsRef.current?.destroy();
@@ -45,6 +50,7 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
     setDuration(0);
     setCurrentTime(0);
     setIsPlaying(false);
+    setLoopEnabled(false);
     setLoadState('preparing');
 
     let cancelled = false;
@@ -125,6 +131,21 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
     setCurrentTime(0);
   };
 
+  const handleToggleLoop = () => {
+    setLoopEnabled(prev => {
+      const next = !prev;
+      const video = videoRef.current;
+      // Jump into the clip range and start playing when looping is turned on
+      if (next && video && hasLoopRange) {
+        if (video.currentTime < loopStart || video.currentTime >= loopEnd) {
+          video.currentTime = loopStart;
+        }
+        video.play();
+      }
+      return next;
+    });
+  };
+
   const handleLoadedMetadata = () => {
     const reported = videoRef.current?.duration;
     if (reported && isFinite(reported) && reported > 0) {
@@ -132,26 +153,17 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
     }
   };
 
-  const handleScrubStart = () => {
-    isDragging.current = true;
-    wasPlaying.current = isPlaying;
-    // Pause while scrubbing so hls.js isn't also trying to advance playback
-    if (videoRef.current && isPlaying) videoRef.current.pause();
-  };
+  // Notify parent whenever our resolved duration changes
+  useEffect(() => {
+    if (duration > 0) onDurationChange?.(duration);
+  }, [duration, onDurationChange]);
 
-  const handleScrubMove = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const t = parseFloat(e.target.value);
-    pendingSeek.current = t;
-    setCurrentTime(t); // update display only — do NOT touch videoRef yet
-  };
-
-  const handleScrubEnd = () => {
-    isDragging.current = false;
-    if (videoRef.current) {
-      videoRef.current.currentTime = pendingSeek.current;
-      if (wasPlaying.current) videoRef.current.play();
+  // Seek when the parent requests it — the trim bar's start handle is the scrubber
+  useEffect(() => {
+    if (seekTo != null && videoRef.current && loadState === 'ready') {
+      videoRef.current.currentTime = seekTo;
     }
-  };
+  }, [seekTo, loadState]);
 
   const formatTime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
@@ -194,8 +206,14 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
               ref={videoRef}
               className="w-full h-auto max-h-96"
               onTimeUpdate={() => {
-                if (!isDragging.current && videoRef.current)
-                  setCurrentTime(videoRef.current.currentTime);
+                const video = videoRef.current;
+                if (!video) return;
+                // Loop playback back to the clip start once we pass the end
+                if (loopEnabled && hasLoopRange && video.currentTime >= loopEnd) {
+                  video.currentTime = loopStart;
+                }
+                setCurrentTime(video.currentTime);
+                onTimeChange?.(video.currentTime);
               }}
               onLoadedMetadata={handleLoadedMetadata}
               onPlay={() => setIsPlaying(true)}
@@ -222,27 +240,27 @@ export function VideoPlayer({ selectedVideo }: VideoPlayerProps) {
           </div>
 
           <div className="space-y-3">
-            {/* Seek bar — full width, above controls for easy scrubbing */}
-            <input
-              type="range"
-              aria-label="Video seek"
-              min={0}
-              max={duration || 1}
-              step={0.1}
-              value={currentTime}
-              onPointerDown={handleScrubStart}
-              onChange={handleScrubMove}
-              onPointerUp={handleScrubEnd}
-              className="w-full accent-primary cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              disabled={!isReady}
-            />
-
+            {/* Scrubbing is handled by the trim bar's start handle below —
+                no separate progress slider here. */}
             <div className="flex items-center gap-3">
               <Button onClick={handlePlayPause} size="sm" disabled={!isReady}>
                 {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </Button>
               <Button onClick={handleStop} size="sm" variant="outline" disabled={!isReady}>
                 <Square className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={handleToggleLoop}
+                size="sm"
+                variant={loopEnabled ? 'default' : 'outline'}
+                disabled={!isReady || !hasLoopRange}
+                title={
+                  loopEnabled
+                    ? 'Looping between clip start and end — click to stop'
+                    : 'Loop playback between clip start and end'
+                }
+              >
+                <Repeat className="h-4 w-4" />
               </Button>
               <Badge variant="secondary" className="ml-auto tabular-nums">
                 {formatTime(currentTime)} / {formatTime(duration)}
