@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 // TODO: Uncomment when database is connected
 // import bcrypt from 'bcryptjs';
 // import { db } from '@/lib/db';
@@ -6,34 +6,34 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, username } = await request.json();
+    const {email, password, username} = await request.json();
 
     // Validation
     if (!email || !password || !username) {
       return NextResponse.json(
-        { error: 'Email, password, and username are required' },
-        { status: 400 }
+        {error: 'Email, password, and username are required'},
+        {status: 400}
       );
     }
 
     if (username.includes(' ')) {
       return NextResponse.json(
-        { error: 'Username cannot contain spaces' },
-        { status: 400 }
+        {error: 'Username cannot contain spaces'},
+        {status: 400}
       );
     }
 
     if (username.length > 32) {
       return NextResponse.json(
-        { error: 'Username must be less than 32 characters' },
-        { status: 400 }
+        {error: 'Username must be less than 32 characters'},
+        {status: 400}
       );
     }
 
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Password must be at least 6 characters long' },
-        { status: 400 }
+        {error: 'Password must be at least 6 characters long'},
+        {status: 400}
       );
     }
 
@@ -41,15 +41,15 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Please enter a valid email address' },
-        { status: 400 }
+        {error: 'Please enter a valid email address'},
+        {status: 400}
       );
     }
 
     // TODO: Check if user already exists when DB is connected
     // const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
     // const existingUsername = await db.select().from(users).where(eq(users.username, username)).limit(1);
-    
+
     // if (existingUser.length > 0) {
     //   return NextResponse.json(
     //     { error: 'User with this email already exists' },
@@ -78,19 +78,19 @@ export async function POST(request: NextRequest) {
 
     // For now, return success without actually creating user
     return NextResponse.json(
-      { 
+      {
         message: 'Registration successful! Please sign in.',
         // TODO: Remove this note when DB is connected
         note: 'Note: User not actually created until database is connected'
       },
-      { status: 201 }
+      {status: 201}
     );
 
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      {error: 'Internal server error'},
+      {status: 500}
     );
   }
 }

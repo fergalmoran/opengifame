@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import { createReadStream } from 'fs';
-import { Readable } from 'stream';
+import {NextRequest, NextResponse} from 'next/server';
+import {createReadStream, promises as fs} from 'fs';
+import {Readable} from 'stream';
 import path from 'path';
-import { spawn } from 'child_process';
-import { getMimeType } from '@/lib/video-config';
+import {spawn} from 'child_process';
+import {getMimeType} from '@/lib/video-config';
 
 const ALLOWED_PATH_PREFIXES = [
   '/mnt/storage/media',
@@ -19,31 +18,31 @@ function isPathAllowed(filePath: string): boolean {
 const BROWSER_NATIVE_FORMATS = new Set(['.mp4', '.webm', '.ogg', '.ogv']);
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const {searchParams} = new URL(request.url);
   const filePath = searchParams.get('path');
 
   if (!filePath) {
-    return NextResponse.json({ error: 'Path parameter is required' }, { status: 400 });
+    return NextResponse.json({error: 'Path parameter is required'}, {status: 400});
   }
 
   if (filePath.includes('..')) {
-    return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    return NextResponse.json({error: 'Invalid path'}, {status: 400});
   }
 
   const normalized = path.normalize(filePath);
 
   if (!isPathAllowed(normalized)) {
-    return NextResponse.json({ error: 'Path not allowed' }, { status: 403 });
+    return NextResponse.json({error: 'Path not allowed'}, {status: 403});
   }
 
   let stat;
   try {
     stat = await fs.stat(normalized);
     if (!stat.isFile()) {
-      return NextResponse.json({ error: 'Not a file' }, { status: 400 });
+      return NextResponse.json({error: 'Not a file'}, {status: 400});
     }
   } catch {
-    return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    return NextResponse.json({error: 'File not found'}, {status: 404});
   }
 
   const ext = path.extname(normalized).toLowerCase();
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
       const end = endStr ? parseInt(endStr, 10) : fileSize - 1;
       const chunkSize = end - start + 1;
 
-      const nodeStream = createReadStream(normalized, { start, end });
+      const nodeStream = createReadStream(normalized, {start, end});
       const webStream = Readable.toWeb(nodeStream) as ReadableStream;
 
       return new Response(webStream, {

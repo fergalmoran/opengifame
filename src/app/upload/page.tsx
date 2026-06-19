@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { usePasteUpload } from '@/components/paste-upload-provider';
-import { Upload, X } from 'lucide-react';
+import {useCallback, useEffect, useState} from 'react';
+import {useSession} from 'next-auth/react';
+import {useRouter} from 'next/navigation';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {usePasteUpload} from '@/components/paste-upload-provider';
+import {Upload, X} from 'lucide-react';
 
 export default function UploadPage() {
-  const { data: session } = useSession();
+  const {data: session} = useSession();
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
@@ -20,7 +20,7 @@ export default function UploadPage() {
   const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
-  const { pastedFile, clearPastedFile } = usePasteUpload();
+  const {pastedFile, clearPastedFile} = usePasteUpload();
 
   // Read a File into the form (sets the file + its data-URL preview). State is
   // updated from the reader's async callback, never synchronously in an effect.
@@ -127,11 +127,11 @@ export default function UploadPage() {
             <h1 className="text-3xl font-bold mb-2">Share Your Image</h1>
             <p className="text-muted-foreground">Upload an image to get started</p>
           </div>
-          
+
           <Card className="border-dashed border-2 border-muted-foreground/25">
             <CardContent className="p-12">
               <div className="text-center relative">
-                <Upload className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+                <Upload className="h-16 w-16 mx-auto text-muted-foreground mb-6"/>
                 <h3 className="text-xl font-semibold mb-2">Choose an image to upload</h3>
                 <p className="text-muted-foreground mb-6">
                   Drag and drop your image here, or click to browse
@@ -152,7 +152,7 @@ export default function UploadPage() {
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Upload className="h-6 w-6" />
+              <Upload className="h-6 w-6"/>
               <span>Upload Image</span>
             </CardTitle>
           </CardHeader>
@@ -182,7 +182,7 @@ export default function UploadPage() {
                         setTagInput('');
                       }}
                     >
-                      <X className="h-4 w-4" />
+                      <X className="h-4 w-4"/>
                     </Button>
                   </div>
                 </div>
@@ -231,13 +231,13 @@ export default function UploadPage() {
                             aria-label={`Remove tag ${tag}`}
                             className="inline-flex items-center justify-center rounded-full hover:text-foreground"
                           >
-                            <X className="h-3 w-3" />
+                            <X className="h-3 w-3"/>
                           </button>
                         </Badge>
                       ))}
                     </div>
                   )}
-                  
+
                   {/* Tag input */}
                   <Input
                     id="tags"

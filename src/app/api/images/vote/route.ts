@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerAuthSession } from '@/lib/server-auth';
-import { db } from '@/lib/db';
-import { votes, images } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import {NextRequest, NextResponse} from 'next/server';
+import {getServerAuthSession} from '@/lib/server-auth';
+import {db} from '@/lib/db';
+import {images, votes} from '@/lib/db/schema';
+import {and, eq} from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerAuthSession();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({error: 'Unauthorized'}, {status: 401});
     }
 
-    const { imageId, isUpvote } = await request.json();
+    const {imageId, isUpvote} = await request.json();
 
     if (!imageId || typeof isUpvote !== 'boolean') {
-      return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+      return NextResponse.json({error: 'Invalid input'}, {status: 400});
     }
 
     // Check if user already voted on this image
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     if (existingVote.length > 0) {
       const currentVote = existingVote[0];
-      
+
       if (currentVote.isUpvote === isUpvote) {
         // Remove vote if clicking the same vote type
         await db
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         // Update vote if changing vote type
         await db
           .update(votes)
-          .set({ isUpvote })
+          .set({isUpvote})
           .where(eq(votes.id, currentVote.id));
       }
     } else {
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     // Update image vote counts
     await db
       .update(images)
-      .set({ upvotes, downvotes })
+      .set({upvotes, downvotes})
       .where(eq(images.id, imageId));
 
     // Get user's current vote
@@ -77,6 +77,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Vote error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({error: 'Internal server error'}, {status: 500});
   }
 }

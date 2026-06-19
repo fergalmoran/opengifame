@@ -12,10 +12,10 @@ export const videoConfig = {
     development: '/srv/dev/opengifame/opengifame/public/uploads',
     production: '/mnt/storage/media/tv/Frasier/Season 1/',
   },
-  
+
   // Supported video file extensions
   supportedExtensions: ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v'] as string[],
-  
+
   // Video conversion settings for browser compatibility
   conversion: {
     targetHeight: 480, // Convert to 480p for optimal streaming
@@ -26,7 +26,7 @@ export const videoConfig = {
     preset: 'fast', // Fast encoding preset
     crf: 28, // Constant rate factor for good quality/size balance
   },
-  
+
   // GIF generation settings
   gif: {
     defaultWidth: 480,
@@ -35,7 +35,7 @@ export const videoConfig = {
     maxFps: 30,
     maxDuration: resolveMaxGifDuration(), // seconds — override with NEXT_PUBLIC_GIF_MAX_DURATION
   },
-  
+
   // Video streaming settings
   streaming: {
     chunkSize: 1024 * 1024, // 1MB chunks

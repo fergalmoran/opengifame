@@ -1,4 +1,4 @@
-export function OpenGifameLogo({ className = "h-8 w-8" }: { className?: string }) {
+export function OpenGifameLogo({className = "h-8 w-8"}: { className?: string }) {
   return (
     <div className={`${className} relative`}>
       <svg
@@ -58,9 +58,9 @@ export function OpenGifameLogo({ className = "h-8 w-8" }: { className?: string }
           />
 
           {/* Gallery indicators */}
-          <rect x="14.5" y="5.5" width="2" height="1.5" rx="0.3" className="fill-primary opacity-60" />
-          <rect x="14.5" y="7.5" width="2" height="1.5" rx="0.3" className="fill-primary opacity-80" />
-          <rect x="14.5" y="9.5" width="2" height="1.5" rx="0.3" className="fill-primary" />
+          <rect x="14.5" y="5.5" width="2" height="1.5" rx="0.3" className="fill-primary opacity-60"/>
+          <rect x="14.5" y="7.5" width="2" height="1.5" rx="0.3" className="fill-primary opacity-80"/>
+          <rect x="14.5" y="9.5" width="2" height="1.5" rx="0.3" className="fill-primary"/>
         </g>
       </svg>
     </div>

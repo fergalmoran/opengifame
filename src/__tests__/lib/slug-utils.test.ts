@@ -1,4 +1,4 @@
-import { mock, describe, test, expect, beforeEach } from 'bun:test';
+import {beforeEach, describe, expect, mock, test} from 'bun:test';
 
 // Queue of results returned by db.select().from().where().limit()
 // Each entry is consumed by one slug-existence check.
@@ -19,7 +19,7 @@ mock.module('@/lib/db', () => ({
   },
 }));
 
-const { slugify, generateUniqueSlug } = await import('@/lib/slug-utils');
+const {slugify, generateUniqueSlug} = await import('@/lib/slug-utils');
 
 describe('slugify', () => {
   test('lowercases input', () => {
@@ -62,14 +62,14 @@ describe('generateUniqueSlug', () => {
   });
 
   test('appends -2 on first collision', async () => {
-    selectQueue.push([{ id: 'x' }]); // 'happy-cat' exists
+    selectQueue.push([{id: 'x'}]); // 'happy-cat' exists
     selectQueue.push([]);            // 'happy-cat-2' is free
     expect(await generateUniqueSlug('Happy Cat')).toBe('happy-cat-2');
   });
 
   test('keeps incrementing until a free slug is found', async () => {
-    selectQueue.push([{ id: 'x' }]); // 'happy-cat' taken
-    selectQueue.push([{ id: 'x' }]); // 'happy-cat-2' taken
+    selectQueue.push([{id: 'x'}]); // 'happy-cat' taken
+    selectQueue.push([{id: 'x'}]); // 'happy-cat-2' taken
     selectQueue.push([]);            // 'happy-cat-3' free
     expect(await generateUniqueSlug('Happy Cat')).toBe('happy-cat-3');
   });

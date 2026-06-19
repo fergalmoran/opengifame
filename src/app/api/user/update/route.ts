@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerAuthSession } from '@/lib/server-auth';
-import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import {NextRequest, NextResponse} from 'next/server';
+import {getServerAuthSession} from '@/lib/server-auth';
+import {db} from '@/lib/db';
+import {users} from '@/lib/db/schema';
+import {eq} from 'drizzle-orm';
+import {mkdir, writeFile} from 'fs/promises';
+import {join} from 'path';
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -12,8 +12,8 @@ export async function PATCH(request: NextRequest) {
 
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
+        {error: 'Authentication required'},
+        {status: 401}
       );
     }
 
@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest) {
     const avatar = formData.get('avatar') as File | null;
 
     if (!name?.trim()) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+      return NextResponse.json({error: 'Name is required'}, {status: 400});
     }
 
     const updateValues: { name: string; bio: string | null; image?: string } = {
@@ -35,15 +35,15 @@ export async function PATCH(request: NextRequest) {
     if (avatar && avatar.size > 0) {
       if (!avatar.type.startsWith('image/')) {
         return NextResponse.json(
-          { error: 'Avatar must be an image' },
-          { status: 400 }
+          {error: 'Avatar must be an image'},
+          {status: 400}
         );
       }
 
       const extension = avatar.name.split('.').pop() || 'png';
       const filename = `avatar-${session.user.id}-${Date.now()}.${extension}`;
       const uploadDir = join(process.cwd(), 'public', 'uploads');
-      await mkdir(uploadDir, { recursive: true });
+      await mkdir(uploadDir, {recursive: true});
       await writeFile(
         join(uploadDir, filename),
         Buffer.from(await avatar.arrayBuffer())
@@ -63,12 +63,12 @@ export async function PATCH(request: NextRequest) {
         image: users.image,
       });
 
-    return NextResponse.json({ success: true, user: updated });
+    return NextResponse.json({success: true, user: updated});
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json(
-      { error: 'Failed to update profile' },
-      { status: 500 }
+      {error: 'Failed to update profile'},
+      {status: 500}
     );
   }
 }

@@ -171,7 +171,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Giphy-style caption overlay — white text with thick black outline + drop shadow */
+.caption-overlay {
+  font-weight: 900;
+  text-transform: uppercase;
+  color: white;
+  line-height: 1.2;
+  font-size: clamp(14px, 4vw, 36px);
+  text-shadow:
+    -3px -3px 0 #000, 3px -3px 0 #000,
+    -3px  3px 0 #000, 3px  3px 0 #000,
+    -3px  0   0 #000, 3px  0   0 #000,
+     0   -3px 0 #000, 0    3px 0 #000,
+     4px  4px 6px rgba(0, 0, 0, 0.7);
 }

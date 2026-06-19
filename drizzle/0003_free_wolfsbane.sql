@@ -1,1 +1,2 @@
-ALTER TABLE "user" ADD COLUMN "bio" text;
+ALTER TABLE "user"
+  ADD COLUMN "bio" text;

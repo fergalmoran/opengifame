@@ -1,4 +1,4 @@
-import { mock, describe, test, expect, beforeEach } from 'bun:test';
+import {beforeEach, describe, expect, mock, test} from 'bun:test';
 
 const state = {
   session: null as any,
@@ -69,12 +69,12 @@ mock.module('@/lib/db', () => ({
   },
 }));
 
-const { PATCH } = await import('@/app/api/images/update/route');
+const {PATCH} = await import('@/app/api/images/update/route');
 
 function makeRequest(body: object) {
   return new Request('http://localhost/api/images/update', {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(body),
   }) as any;
 }
@@ -89,112 +89,112 @@ beforeEach(() => {
 
 describe('PATCH /api/images/update', () => {
   test('401 when unauthenticated', async () => {
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'T' }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'T'}));
     expect(res.status).toBe(401);
   });
 
   test('400 when imageId is missing', async () => {
-    state.session = { user: { id: 'u1' } };
-    const res = await PATCH(makeRequest({ title: 'T' }));
+    state.session = {user: {id: 'u1'}};
+    const res = await PATCH(makeRequest({title: 'T'}));
     expect(res.status).toBe(400);
   });
 
   test('400 when title is blank', async () => {
-    state.session = { user: { id: 'u1' } };
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: '  ' }));
+    state.session = {user: {id: 'u1'}};
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: '  '}));
     expect(res.status).toBe(400);
   });
 
   test('404 when image not found or not owned', async () => {
-    state.session = { user: { id: 'u1' } };
+    state.session = {user: {id: 'u1'}};
     state.updateResult = []; // nothing updated → not found / wrong owner
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'Title', tags: [] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'Title', tags: []}));
     expect(res.status).toBe(404);
   });
 
   test('200 when updating with no tags', async () => {
-    state.session = { user: { id: 'u1' } };
-    state.updateResult = [{ id: 'img-1' }];
+    state.session = {user: {id: 'u1'}};
+    state.updateResult = [{id: 'img-1'}];
     // No tags to resolve, but still fetches current image_tags
     state.selectQueue = [
       [], // current image_tags → empty
     ];
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'New Title', tags: [] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'New Title', tags: []}));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
   });
 
   test('creates new tags that do not yet exist', async () => {
-    state.session = { user: { id: 'u1' } };
-    state.updateResult = [{ id: 'img-1' }];
+    state.session = {user: {id: 'u1'}};
+    state.updateResult = [{id: 'img-1'}];
     state.selectQueue = [
       [],              // 'cats' tag lookup → does not exist
       [],              // current image_tags → empty
     ];
     state.insertQueue = [
-      [{ id: 't-new' }], // newly created 'cats' tag
+      [{id: 't-new'}], // newly created 'cats' tag
       [],                // image_tags insert (no returning needed)
     ];
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'T', tags: ['cats'] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'T', tags: ['cats']}));
     expect(res.status).toBe(200);
   });
 
   test('reuses existing tags without inserting duplicates', async () => {
-    state.session = { user: { id: 'u1' } };
-    state.updateResult = [{ id: 'img-1' }];
+    state.session = {user: {id: 'u1'}};
+    state.updateResult = [{id: 'img-1'}];
     state.selectQueue = [
-      [{ id: 't1' }], // 'funny' tag lookup → already exists
+      [{id: 't1'}], // 'funny' tag lookup → already exists
       [],             // current image_tags → empty
     ];
     state.insertQueue = [
       [], // image_tags insert (the existing tag is just linked)
     ];
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'T', tags: ['funny'] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'T', tags: ['funny']}));
     expect(res.status).toBe(200);
   });
 
   test('removes tags no longer in the list', async () => {
-    state.session = { user: { id: 'u1' } };
-    state.updateResult = [{ id: 'img-1' }];
+    state.session = {user: {id: 'u1'}};
+    state.updateResult = [{id: 'img-1'}];
     state.selectQueue = [
       // No tag name lookups (tags: [])
-      [{ tagId: 't-old' }], // current image_tags has one tag to remove
+      [{tagId: 't-old'}], // current image_tags has one tag to remove
     ];
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'T', tags: [] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'T', tags: []}));
     expect(res.status).toBe(200);
   });
 
   test('normalises tag names to lowercase and trims whitespace', async () => {
-    state.session = { user: { id: 'u1' } };
-    state.updateResult = [{ id: 'img-1' }];
+    state.session = {user: {id: 'u1'}};
+    state.updateResult = [{id: 'img-1'}];
     // Expect the tag lookup to happen with 'cats' (lowercased/trimmed)
     state.selectQueue = [
-      [{ id: 't1' }], // 'cats' found
+      [{id: 't1'}], // 'cats' found
       [],             // current image_tags empty
     ];
     state.insertQueue = [[]];
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'T', tags: ['  CATS  '] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'T', tags: ['  CATS  ']}));
     expect(res.status).toBe(200);
   });
 
   test('deduplicates tag names', async () => {
-    state.session = { user: { id: 'u1' } };
-    state.updateResult = [{ id: 'img-1' }];
+    state.session = {user: {id: 'u1'}};
+    state.updateResult = [{id: 'img-1'}];
     // Only one tag lookup should happen despite two identical entries
     state.selectQueue = [
-      [{ id: 't1' }], // 'funny' (looked up once)
+      [{id: 't1'}], // 'funny' (looked up once)
       [],             // current image_tags
     ];
     state.insertQueue = [[]];
 
-    const res = await PATCH(makeRequest({ imageId: 'img-1', title: 'T', tags: ['funny', 'funny'] }));
+    const res = await PATCH(makeRequest({imageId: 'img-1', title: 'T', tags: ['funny', 'funny']}));
     expect(res.status).toBe(200);
   });
 });

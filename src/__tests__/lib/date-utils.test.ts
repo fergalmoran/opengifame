@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'bun:test';
-import { formatDate, formatHumanDate } from '@/lib/date-utils';
+import {describe, expect, test} from 'bun:test';
+import {formatDate, formatHumanDate} from '@/lib/date-utils';
 
 describe('formatDate', () => {
   test('output contains the year, abbreviated month, and day', () => {

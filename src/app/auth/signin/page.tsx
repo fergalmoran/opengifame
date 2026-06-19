@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { SignInForm } from "@/components/sign-in-form";
+import {Suspense} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {Card, CardContent} from "@/components/ui/card";
+import {SignInForm} from "@/components/sign-in-form";
 
 function SignInPageContent() {
   const router = useRouter();
@@ -27,7 +27,7 @@ function SignInPageContent() {
 export default function SignInPage() {
   return (
     <Suspense>
-      <SignInPageContent />
+      <SignInPageContent/>
     </Suspense>
   );
 }

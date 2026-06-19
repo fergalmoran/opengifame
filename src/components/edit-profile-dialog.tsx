@@ -1,13 +1,13 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { Pencil, Camera } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { getUserInitials } from '@/lib/user-utils';
+import {useRef, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {useSession} from 'next-auth/react';
+import {Camera, Pencil} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {getUserInitials} from '@/lib/user-utils';
 import {
   Dialog,
   DialogContent,
@@ -25,12 +25,12 @@ interface EditProfileDialogProps {
 }
 
 export function EditProfileDialog({
-  initialName,
-  initialBio,
-  initialImage,
-}: EditProfileDialogProps) {
+                                    initialName,
+                                    initialBio,
+                                    initialImage,
+                                  }: EditProfileDialogProps) {
   const router = useRouter();
-  const { update } = useSession();
+  const {update} = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(initialName);
@@ -102,7 +102,7 @@ export function EditProfileDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" title="Edit profile">
-          <Pencil className="h-4 w-4" />
+          <Pencil className="h-4 w-4"/>
           Edit profile
         </Button>
       </DialogTrigger>
@@ -124,13 +124,14 @@ export function EditProfileDialog({
               aria-label="Change profile picture"
             >
               <Avatar className="h-24 w-24 border">
-                <AvatarImage src={shownAvatar} alt={name || 'Profile picture'} />
+                <AvatarImage src={shownAvatar} alt={name || 'Profile picture'}/>
                 <AvatarFallback className="text-2xl">
                   {getUserInitials(name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Camera className="h-6 w-6 text-white" />
+              <span
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="h-6 w-6 text-white"/>
               </span>
             </button>
             <button

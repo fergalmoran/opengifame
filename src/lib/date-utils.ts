@@ -1,4 +1,4 @@
-import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns';
+import {format, formatDistanceToNow, isToday, isYesterday} from 'date-fns';
 
 /**
  * Utility functions for date formatting
@@ -10,13 +10,13 @@ import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns';
 export function formatHumanDate(date: Date): string {
   const now = new Date();
   const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   if (isToday(date)) {
-    return formatDistanceToNow(date, { addSuffix: true });
+    return formatDistanceToNow(date, {addSuffix: true});
   } else if (isYesterday(date)) {
     return 'yesterday';
   } else if (diffInDays < 7) {
-    return formatDistanceToNow(date, { addSuffix: true });
+    return formatDistanceToNow(date, {addSuffix: true});
   } else {
     return format(date, 'MMM d, yyyy');
   }

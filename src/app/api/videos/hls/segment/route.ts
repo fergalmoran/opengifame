@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createReadStream, existsSync } from 'fs';
-import { promises as fs } from 'fs';
-import { Readable } from 'stream';
+import {NextRequest, NextResponse} from 'next/server';
+import {createReadStream, existsSync, promises as fs} from 'fs';
+import {Readable} from 'stream';
 import path from 'path';
-import { hlsOutputDir } from '@/lib/hls-cache';
+import {hlsOutputDir} from '@/lib/hls-cache';
 
 const ALLOWED_PATH_PREFIXES = [
   '/mnt/storage/media',
@@ -15,21 +14,21 @@ function isPathAllowed(filePath: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const {searchParams} = new URL(request.url);
   const filePath = searchParams.get('path');
   const file = searchParams.get('file');
 
   if (!filePath || filePath.includes('..') || !file) {
-    return NextResponse.json({ error: 'Invalid params' }, { status: 400 });
+    return NextResponse.json({error: 'Invalid params'}, {status: 400});
   }
 
   if (!/^(playlist\.m3u8|segment\d{4}\.ts)$/.test(file)) {
-    return NextResponse.json({ error: 'Invalid file' }, { status: 400 });
+    return NextResponse.json({error: 'Invalid file'}, {status: 400});
   }
 
   const normalized = path.normalize(filePath);
   if (!isPathAllowed(normalized)) {
-    return NextResponse.json({ error: 'Path not allowed' }, { status: 403 });
+    return NextResponse.json({error: 'Path not allowed'}, {status: 403});
   }
 
   const outputDir = hlsOutputDir(normalized);
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (!existsSync(segmentPath)) {
-    return NextResponse.json({ error: 'Segment not found' }, { status: 404 });
+    return NextResponse.json({error: 'Segment not found'}, {status: 404});
   }
 
   if (file === 'playlist.m3u8') {

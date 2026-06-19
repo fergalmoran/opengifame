@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 export default function VideoDebugPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -68,7 +68,7 @@ export default function VideoDebugPage() {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Video Duration Debug Test</h1>
-      
+
       <div className="mb-4">
         <video
           ref={videoRef}
@@ -76,7 +76,7 @@ export default function VideoDebugPage() {
           width="800"
           className="border border-border"
         >
-          <source src="/uploads/test-10min-video.mp4" type="video/mp4" />
+          <source src="/uploads/test-10min-video.mp4" type="video/mp4"/>
         </video>
       </div>
 

@@ -1,4 +1,4 @@
-import { mock, describe, test, expect, beforeEach } from 'bun:test';
+import {beforeEach, describe, expect, mock, test} from 'bun:test';
 
 const selectQueue: any[][] = [];
 let mockSession: any = null;
@@ -24,10 +24,10 @@ function makeSelectProxy(): any {
 }
 
 mock.module('@/lib/db', () => ({
-  db: { select: () => makeSelectProxy() },
+  db: {select: () => makeSelectProxy()},
 }));
 
-mock.module('@/lib/auth', () => ({ authOptions: {} }));
+mock.module('@/lib/auth', () => ({authOptions: {}}));
 
 mock.module('next-auth', () => ({
   default: {},
@@ -53,11 +53,11 @@ describe('fetchCommentCounts', () => {
 
   test('maps imageId → count from DB results', async () => {
     selectQueue.push([
-      { imageId: 'img-1', count: 3 },
-      { imageId: 'img-2', count: 7 },
+      {imageId: 'img-1', count: 3},
+      {imageId: 'img-2', count: 7},
     ]);
     const result = await fetchCommentCounts(['img-1', 'img-2']);
-    expect(result).toEqual({ 'img-1': 3, 'img-2': 7 });
+    expect(result).toEqual({'img-1': 3, 'img-2': 7});
   });
 
   test('returns {} when DB returns no rows', async () => {
@@ -73,9 +73,9 @@ describe('fetchImageTags', () => {
 
   test('groups tags by imageId', async () => {
     selectQueue.push([
-      { imageId: 'img-1', tag: { id: 't1', name: 'funny' } },
-      { imageId: 'img-1', tag: { id: 't2', name: 'cats' } },
-      { imageId: 'img-2', tag: { id: 't3', name: 'dogs' } },
+      {imageId: 'img-1', tag: {id: 't1', name: 'funny'}},
+      {imageId: 'img-1', tag: {id: 't2', name: 'cats'}},
+      {imageId: 'img-2', tag: {id: 't3', name: 'dogs'}},
     ]);
     const result = await fetchImageTags(['img-1', 'img-2']);
     expect(result['img-1']).toHaveLength(2);
@@ -101,10 +101,10 @@ describe('fetchUserVotes', () => {
   });
 
   test('maps imageId → "up"/"down" from DB results when authenticated', async () => {
-    mockSession = { user: { id: 'u1' } };
+    mockSession = {user: {id: 'u1'}};
     selectQueue.push([
-      { imageId: 'img-1', isUpvote: true },
-      { imageId: 'img-2', isUpvote: false },
+      {imageId: 'img-1', isUpvote: true},
+      {imageId: 'img-2', isUpvote: false},
     ]);
     const result = await fetchUserVotes(['img-1', 'img-2']);
     expect(result['img-1']).toBe('up');
@@ -112,7 +112,7 @@ describe('fetchUserVotes', () => {
   });
 
   test('returns {} when authenticated but no votes found', async () => {
-    mockSession = { user: { id: 'u1' } };
+    mockSession = {user: {id: 'u1'}};
     selectQueue.push([]);
     expect(await fetchUserVotes(['img-1'])).toEqual({});
   });
@@ -127,13 +127,13 @@ describe('fetchImageMetadata', () => {
   });
 
   test('aggregates tags, comment counts, and user votes for given images', async () => {
-    mockSession = { user: { id: 'u1' } };
-    const images = [{ id: 'img-1' } as any];
+    mockSession = {user: {id: 'u1'}};
+    const images = [{id: 'img-1'} as any];
 
     // Queue: tags, comment counts, user votes (3 parallel DB calls via Promise.all)
-    selectQueue.push([{ imageId: 'img-1', tag: { id: 't1', name: 'cats' } }]);
-    selectQueue.push([{ imageId: 'img-1', count: 5 }]);
-    selectQueue.push([{ imageId: 'img-1', isUpvote: true }]);
+    selectQueue.push([{imageId: 'img-1', tag: {id: 't1', name: 'cats'}}]);
+    selectQueue.push([{imageId: 'img-1', count: 5}]);
+    selectQueue.push([{imageId: 'img-1', isUpvote: true}]);
 
     const result = await fetchImageMetadata(images);
     expect(result.tagsByImage['img-1'][0].name).toBe('cats');

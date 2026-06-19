@@ -1,12 +1,12 @@
-import { notFound } from 'next/navigation';
-import { db } from '@/lib/db';
-import { images, users } from '@/lib/db/schema';
-import { eq, desc, or } from 'drizzle-orm';
-import { UserAvatar } from '@/components/user-avatar';
-import { ImageCard } from '@/components/image-card';
-import { EditProfileDialog } from '@/components/edit-profile-dialog';
-import { fetchImageMetadata } from '@/lib/image-utils';
-import { getServerAuthSession } from '@/lib/server-auth';
+import {notFound} from 'next/navigation';
+import {db} from '@/lib/db';
+import {images, users} from '@/lib/db/schema';
+import {desc, eq, or} from 'drizzle-orm';
+import {UserAvatar} from '@/components/user-avatar';
+import {ImageCard} from '@/components/image-card';
+import {EditProfileDialog} from '@/components/edit-profile-dialog';
+import {fetchImageMetadata} from '@/lib/image-utils';
+import {getServerAuthSession} from '@/lib/server-auth';
 
 interface ProfilePageProps {
   params: Promise<{
@@ -17,8 +17,8 @@ interface ProfilePageProps {
 // Force dynamic rendering so vote/comment state stays fresh
 export const dynamic = 'force-dynamic';
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { slug } = await params;
+export default async function ProfilePage({params}: ProfilePageProps) {
+  const {slug} = await params;
   const session = await getServerAuthSession();
 
   // Support both slug-based URLs (new) and id-based URLs (legacy links) transparently.
@@ -62,14 +62,14 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     .orderBy(desc(images.createdAt))
     .limit(50);
 
-  const { tagsByImage, commentCountMap, userVotes } =
+  const {tagsByImage, commentCountMap, userVotes} =
     await fetchImageMetadata(imagesData);
 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Profile header */}
       <div className="flex items-start gap-6 mb-10">
-        <UserAvatar src={profile.image} name={profile.name} size={96} />
+        <UserAvatar src={profile.image} name={profile.name} size={96}/>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-4">

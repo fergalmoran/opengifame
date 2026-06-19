@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 
 const ANIMALS = [
   'Bear', 'Cat', 'Crow', 'Deer', 'Dog', 'Duck', 'Eagle', 'Elephant',

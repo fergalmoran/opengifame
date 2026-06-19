@@ -1,26 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerAuthSession } from '@/lib/server-auth';
-import { db } from '@/lib/db';
-import { comments, users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import {NextRequest, NextResponse} from 'next/server';
+import {getServerAuthSession} from '@/lib/server-auth';
+import {db} from '@/lib/db';
+import {comments, users} from '@/lib/db/schema';
+import {eq} from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerAuthSession();
-    
+
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
+        {error: 'Authentication required'},
+        {status: 401}
       );
     }
 
-    const { imageId, content } = await request.json();
+    const {imageId, content} = await request.json();
 
     if (!imageId || !content?.trim()) {
       return NextResponse.json(
-        { error: 'Image ID and content are required' },
-        { status: 400 }
+        {error: 'Image ID and content are required'},
+        {status: 400}
       );
     }
 
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating comment:', error);
     return NextResponse.json(
-      { error: 'Failed to create comment' },
-      { status: 500 }
+      {error: 'Failed to create comment'},
+      {status: 500}
     );
   }
 }

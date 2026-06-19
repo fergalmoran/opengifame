@@ -1,13 +1,13 @@
 'use client';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ScoreDisplay } from '@/components/ui/stats-display';
-import { MessageCircle, Calendar } from 'lucide-react';
+import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
+import {ScoreDisplay} from '@/components/ui/stats-display';
+import {Calendar, MessageCircle} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { VotingButtons } from './voting-buttons';
-import { formatHumanDate } from '@/lib/date-utils';
+import {VotingButtons} from './voting-buttons';
+import {formatHumanDate} from '@/lib/date-utils';
 
 interface ImageCardProps {
   id: string;
@@ -33,19 +33,19 @@ interface ImageCardProps {
 }
 
 export function ImageCard({
-  id,
-  slug,
-  title,
-  description,
-  url,
-  upvotes,
-  downvotes,
-  createdAt,
-  uploadedBy,
-  tags,
-  userVote,
-  commentCount,
-}: ImageCardProps) {
+                            id,
+                            slug,
+                            title,
+                            description,
+                            url,
+                            upvotes,
+                            downvotes,
+                            createdAt,
+                            uploadedBy,
+                            tags,
+                            userVote,
+                            commentCount,
+                          }: ImageCardProps) {
 
   const score = upvotes - downvotes;
 
@@ -59,7 +59,7 @@ export function ImageCard({
           >
             {title}
           </Link>
-          <ScoreDisplay score={score} size="sm" />
+          <ScoreDisplay score={score} size="sm"/>
         </div>
         {description && (
           <p className="text-sm text-muted-foreground">{description}</p>
@@ -93,7 +93,7 @@ export function ImageCard({
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" asChild>
               <Link href={`/image/${slug}`}>
-                <MessageCircle className="mr-1 h-4 w-4" />
+                <MessageCircle className="mr-1 h-4 w-4"/>
                 {commentCount}
               </Link>
             </Button>
@@ -102,7 +102,7 @@ export function ImageCard({
 
         <div className="flex w-full items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center space-x-1">
-            <Calendar className="h-3 w-3" />
+            <Calendar className="h-3 w-3"/>
             <span>{formatHumanDate(createdAt)}</span>
           </div>
           {(uploadedBy.slug ?? uploadedBy.id) ? (

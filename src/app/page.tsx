@@ -1,10 +1,10 @@
-import { ImageCard } from "@/components/image-card";
-import { db } from "@/lib/db";
-import { images, users } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
-import { fetchImageMetadata } from "@/lib/image-utils";
-import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import {ImageCard} from "@/components/image-card";
+import {db} from "@/lib/db";
+import {images, users} from "@/lib/db/schema";
+import {desc, eq} from "drizzle-orm";
+import {fetchImageMetadata} from "@/lib/image-utils";
+import {Button} from "@/components/ui/button";
+import {Upload} from "lucide-react";
 import Link from "next/link";
 
 // Force dynamic rendering for this page
@@ -17,7 +17,7 @@ export default async function Home() {
   let userVotes: Awaited<ReturnType<typeof loadHomepageImages>>["userVotes"];
 
   try {
-    ({ imagesData, tagsByImage, commentCountMap, userVotes } = await loadHomepageImages());
+    ({imagesData, tagsByImage, commentCountMap, userVotes} = await loadHomepageImages());
   } catch (error) {
     console.error("Error loading homepage:", error);
 
@@ -38,73 +38,73 @@ export default async function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-        {/* Hero section for empty state or main content */}
-        {imagesData.length === 0 ? (
-          <div className="text-center py-24">
-            <div className="space-y-8">
-              <h2 className="text-4xl font-bold">
-                Welcome to OpenGifame
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-md mx-auto leading-relaxed">
-                No images uploaded yet. Be the first to share your content with the world.
-              </p>
-              <div className="flex justify-center">
-                <Button asChild size="lg">
-                  <Link href="/upload">
-                    <Upload className="mr-2 h-5 w-5" />
-                    Upload First Image
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Page header */}
-            <div className="text-center mb-12">
-              <div className="space-y-4">
-                <h1 className="font-bold mb-4">
-                  Here's what's new
-                </h1>
-              </div>
-            </div>
-
-            {/* Image grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {imagesData.map((image) => (
-                <ImageCard
-                  key={image.id}
-                  id={image.id}
-                  slug={image.slug}
-                  title={image.title}
-                  description={image.description || undefined}
-                  url={image.url}
-                  upvotes={image.upvotes}
-                  downvotes={image.downvotes}
-                  createdAt={image.createdAt}
-                  uploadedBy={{
-                    id: image.uploadedBy,
-                    slug: image.uploaderSlug || undefined,
-                    name: image.uploaderName || undefined,
-                    image: image.uploaderImage || undefined,
-                  }}
-                  tags={tagsByImage[image.id] || []}
-                  userVote={userVotes[image.id] || null}
-                  commentCount={commentCountMap[image.id] || 0}
-                />
-              ))}
-            </div>
-
-            {/* Load more section */}
-            <div className="text-center mt-16">
-              <Button variant="outline" size="lg">
-                Load More Images
+      {/* Hero section for empty state or main content */}
+      {imagesData.length === 0 ? (
+        <div className="text-center py-24">
+          <div className="space-y-8">
+            <h2 className="text-4xl font-bold">
+              Welcome to OpenGifame
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-md mx-auto leading-relaxed">
+              No images uploaded yet. Be the first to share your content with the world.
+            </p>
+            <div className="flex justify-center">
+              <Button asChild size="lg">
+                <Link href="/upload">
+                  <Upload className="mr-2 h-5 w-5"/>
+                  Upload First Image
+                </Link>
               </Button>
             </div>
-          </>
-        )}
-      </div>
-    );
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Page header */}
+          <div className="text-center mb-12">
+            <div className="space-y-4">
+              <h1 className="font-bold mb-4">
+                Here's what's new
+              </h1>
+            </div>
+          </div>
+
+          {/* Image grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {imagesData.map((image) => (
+              <ImageCard
+                key={image.id}
+                id={image.id}
+                slug={image.slug}
+                title={image.title}
+                description={image.description || undefined}
+                url={image.url}
+                upvotes={image.upvotes}
+                downvotes={image.downvotes}
+                createdAt={image.createdAt}
+                uploadedBy={{
+                  id: image.uploadedBy,
+                  slug: image.uploaderSlug || undefined,
+                  name: image.uploaderName || undefined,
+                  image: image.uploaderImage || undefined,
+                }}
+                tags={tagsByImage[image.id] || []}
+                userVote={userVotes[image.id] || null}
+                commentCount={commentCountMap[image.id] || 0}
+              />
+            ))}
+          </div>
+
+          {/* Load more section */}
+          <div className="text-center mt-16">
+            <Button variant="outline" size="lg">
+              Load More Images
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 async function loadHomepageImages() {
@@ -130,7 +130,7 @@ async function loadHomepageImages() {
     .limit(20);
 
   // Fetch metadata for all images
-  const { tagsByImage, commentCountMap, userVotes } = await fetchImageMetadata(imagesData);
+  const {tagsByImage, commentCountMap, userVotes} = await fetchImageMetadata(imagesData);
 
-  return { imagesData, tagsByImage, commentCountMap, userVotes };
+  return {imagesData, tagsByImage, commentCountMap, userVotes};
 }

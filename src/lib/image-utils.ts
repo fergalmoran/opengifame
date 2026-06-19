@@ -1,8 +1,8 @@
-import { db } from '@/lib/db';
-import { imageTags, tags, votes, comments } from '@/lib/db/schema';
-import { eq, inArray, and, sql } from 'drizzle-orm';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import {db} from '@/lib/db';
+import {comments, imageTags, tags, votes} from '@/lib/db/schema';
+import {and, eq, inArray, sql} from 'drizzle-orm';
+import {getServerSession} from 'next-auth';
+import {authOptions} from '@/lib/auth';
 
 export interface ImageWithMetadata {
   id: string;
@@ -36,7 +36,7 @@ export function processCommentCounts(
   commentCounts: Array<{ imageId: string; count: number }>
 ): Record<string, number> {
   return commentCounts.reduce(
-    (acc: Record<string, number>, { imageId, count }) => {
+    (acc: Record<string, number>, {imageId, count}) => {
       acc[imageId] = count;
       return acc;
     },
@@ -87,7 +87,7 @@ export async function fetchUserVotes(
   imageIds: string[]
 ): Promise<Record<string, 'up' | 'down'>> {
   const session = await getServerSession(authOptions);
-  
+
   if (!session?.user?.id || imageIds.length === 0) {
     return {};
   }

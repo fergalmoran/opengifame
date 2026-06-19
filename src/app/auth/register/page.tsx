@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle } from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Alert, AlertDescription} from '@/components/ui/alert';
+import {AlertCircle, CheckCircle} from 'lucide-react';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -90,8 +90,8 @@ export default function RegisterPage() {
 
       if (response.ok) {
         setSuccess(data.message);
-        setFormData({ email: '', username: '', password: '', confirmPassword: '' });
-        
+        setFormData({email: '', username: '', password: '', confirmPassword: ''});
+
         // Redirect to sign-in page after successful registration
         setTimeout(() => {
           router.push('/auth/signin');
@@ -108,12 +108,12 @@ export default function RegisterPage() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    
+
     // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
@@ -136,7 +136,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {errors.length > 0 && (
               <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="h-4 w-4"/>
                 <AlertDescription>
                   <ul className="list-disc list-inside space-y-1">
                     {errors.map((error, index) => (
@@ -149,7 +149,7 @@ export default function RegisterPage() {
 
             {success && (
               <Alert>
-                <CheckCircle className="h-4 w-4" />
+                <CheckCircle className="h-4 w-4"/>
                 <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}

@@ -1,8 +1,8 @@
-import { db } from "@/lib/db";
-import { images, users, imageTags, tags } from "@/lib/db/schema";
-import { desc, eq } from "drizzle-orm";
-import { ImageCard } from "@/components/image-card";
-import { fetchImageMetadata } from "@/lib/image-utils";
+import {db} from "@/lib/db";
+import {images, imageTags, tags, users} from "@/lib/db/schema";
+import {desc, eq} from "drizzle-orm";
+import {ImageCard} from "@/components/image-card";
+import {fetchImageMetadata} from "@/lib/image-utils";
 
 interface TagPageProps {
   params: Promise<{
@@ -13,8 +13,8 @@ interface TagPageProps {
 // Force dynamic rendering so vote/comment state stays fresh
 export const dynamic = "force-dynamic";
 
-export default async function TagPage({ params }: TagPageProps) {
-  const { name } = await params;
+export default async function TagPage({params}: TagPageProps) {
+  const {name} = await params;
   const tagName = decodeURIComponent(name).toLowerCase();
 
   const imagesData = await db
@@ -40,7 +40,7 @@ export default async function TagPage({ params }: TagPageProps) {
     .orderBy(desc(images.createdAt))
     .limit(50);
 
-  const { tagsByImage, commentCountMap, userVotes } =
+  const {tagsByImage, commentCountMap, userVotes} =
     await fetchImageMetadata(imagesData);
 
   return (

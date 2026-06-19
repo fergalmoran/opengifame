@@ -2,7 +2,8 @@
 
 ## Overview
 
-OpenGifame provides basic video functionality for playing videos in the browser. The system serves videos directly from the uploads directory for browser playback.
+OpenGifame provides basic video functionality for playing videos in the browser. The system serves videos directly from
+the uploads directory for browser playback.
 
 ## Current Features
 
@@ -36,11 +37,13 @@ The video system uses this endpoint:
 
 ### For Developers
 
-Videos are served as static files from the uploads directory. The video player component loads videos directly using standard HTML5 video elements.
+Videos are served as static files from the uploads directory. The video player component loads videos directly using
+standard HTML5 video elements.
 
 ## Future Considerations
 
-For advanced video processing needs (format conversion, streaming, transcoding, GIF generation, etc.), consider implementing a separate microservice dedicated to video processing rather than handling it within the main application.
+For advanced video processing needs (format conversion, streaming, transcoding, GIF generation, etc.), consider
+implementing a separate microservice dedicated to video processing rather than handling it within the main application.
 
 ## Performance
 

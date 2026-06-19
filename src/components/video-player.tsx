@@ -1,11 +1,18 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import type HlsType from 'hls.js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Square, FileVideo, Loader2, Repeat } from 'lucide-react';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
+import {Captions, FileVideo, Loader2, Pause, Play, Repeat, Square} from 'lucide-react';
+
+export interface SubtitleTrack {
+  label: string;
+  language?: string;
+  url: string;
+  burnPath: string;
+}
 
 interface VideoFile {
   name: string;
@@ -16,6 +23,7 @@ interface VideoFile {
 
 interface VideoPlayerProps {
   selectedVideo?: VideoFile;
+  subtitleTracks?: SubtitleTrack[];
   onTimeChange?: (time: number) => void;
   onDurationChange?: (duration: number) => void;
   seekTo?: number | null;
@@ -25,7 +33,15 @@ interface VideoPlayerProps {
 
 type LoadState = 'idle' | 'preparing' | 'ready' | 'error';
 
-export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, seekTo, loopStart = 0, loopEnd = 0 }: VideoPlayerProps) {
+export function VideoPlayer({
+                              selectedVideo,
+                              subtitleTracks = [],
+                              onTimeChange,
+                              onDurationChange,
+                              seekTo,
+                              loopStart = 0,
+                              loopEnd = 0
+                            }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<HlsType | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,8 +50,21 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [videoError, setVideoError] = useState<string | null>(null);
   const [loopEnabled, setLoopEnabled] = useState(false);
+  const [subsEnabled, setSubsEnabled] = useState(true);
+  const [activeSubIndex, setActiveSubIndex] = useState(0);
 
   const hasLoopRange = loopEnd > loopStart;
+  const hasSubtitles = subtitleTracks.length > 0;
+
+  // Sync text track visibility whenever subtitle state changes
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const tracks = video.textTracks;
+    for (let i = 0; i < tracks.length; i++) {
+      tracks[i].mode = subsEnabled && i === activeSubIndex ? 'showing' : 'hidden';
+    }
+  }, [subsEnabled, activeSubIndex, loadState]);
 
   const destroyHls = useCallback(() => {
     hlsRef.current?.destroy();
@@ -51,6 +80,8 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
     setCurrentTime(0);
     setIsPlaying(false);
     setLoopEnabled(false);
+    setSubsEnabled(true);
+    setActiveSubIndex(0);
     setLoadState('preparing');
 
     let cancelled = false;
@@ -71,7 +102,9 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
       // Fetch real duration from ffprobe (stream has no duration metadata)
       fetch(`/api/videos/info?path=${encodedPath}`)
         .then(r => r.json())
-        .then((d: { duration?: number }) => { if (!cancelled && d.duration) setDuration(d.duration); })
+        .then((d: { duration?: number }) => {
+          if (!cancelled && d.duration) setDuration(d.duration);
+        })
         .catch(console.error);
 
       const video = videoRef.current;
@@ -83,7 +116,7 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
       if (cancelled) return;
 
       if (Hls.isSupported()) {
-        const hls = new Hls({ enableWorker: true, backBufferLength: 90 });
+        const hls = new Hls({enableWorker: true, backBufferLength: 90});
         hlsRef.current = hls;
         hls.loadSource(playlistUrl);
         hls.attachMedia(video);
@@ -146,6 +179,8 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
     });
   };
 
+  const handleToggleSubs = () => setSubsEnabled(prev => !prev);
+
   const handleLoadedMetadata = () => {
     const reported = videoRef.current?.duration;
     if (reported && isFinite(reported) && reported > 0) {
@@ -178,7 +213,7 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
       <Card>
         <CardContent className="flex items-center justify-center h-96">
           <div className="text-center space-y-4">
-            <FileVideo className="h-16 w-16 mx-auto text-muted-foreground" />
+            <FileVideo className="h-16 w-16 mx-auto text-muted-foreground"/>
             <div className="text-lg font-medium">Select a video to get started</div>
             <div className="text-sm text-muted-foreground">
               Choose a video from the list to create animated GIFs
@@ -196,7 +231,7 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Play className="h-5 w-5" />
+            <Play className="h-5 w-5"/>
             {selectedVideo.name}
           </CardTitle>
         </CardHeader>
@@ -218,11 +253,22 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
               onLoadedMetadata={handleLoadedMetadata}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
-            />
+            >
+              {subtitleTracks.map((track, i) => (
+                <track
+                  key={track.url}
+                  kind="subtitles"
+                  src={track.url}
+                  srcLang={track.language}
+                  label={track.label}
+                  default={i === 0}
+                />
+              ))}
+            </video>
             {loadState === 'preparing' && (
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
                 <div className="text-center text-white space-y-3">
-                  <Loader2 className="h-10 w-10 mx-auto animate-spin" />
+                  <Loader2 className="h-10 w-10 mx-auto animate-spin"/>
                   <div className="text-sm font-medium">Preparing video…</div>
                   <div className="text-xs text-white/60">Transcoding first segments</div>
                 </div>
@@ -231,7 +277,7 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
             {loadState === 'error' && videoError && (
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4">
                 <div className="text-center text-white space-y-2">
-                  <FileVideo className="h-12 w-12 mx-auto text-destructive" />
+                  <FileVideo className="h-12 w-12 mx-auto text-destructive"/>
                   <div className="text-sm font-medium">Playback Failed</div>
                   <div className="text-xs text-white/70 max-w-sm">{videoError}</div>
                 </div>
@@ -240,28 +286,47 @@ export function VideoPlayer({ selectedVideo, onTimeChange, onDurationChange, see
           </div>
 
           <div className="space-y-3">
-            {/* Scrubbing is handled by the trim bar's start handle below —
-                no separate progress slider here. */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <Button onClick={handlePlayPause} size="sm" disabled={!isReady}>
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {isPlaying ? <Pause className="h-4 w-4"/> : <Play className="h-4 w-4"/>}
               </Button>
               <Button onClick={handleStop} size="sm" variant="outline" disabled={!isReady}>
-                <Square className="h-4 w-4" />
+                <Square className="h-4 w-4"/>
               </Button>
               <Button
                 onClick={handleToggleLoop}
                 size="sm"
                 variant={loopEnabled ? 'default' : 'outline'}
                 disabled={!isReady || !hasLoopRange}
-                title={
-                  loopEnabled
-                    ? 'Looping between clip start and end — click to stop'
-                    : 'Loop playback between clip start and end'
-                }
+                title={loopEnabled ? 'Looping clip range — click to stop' : 'Loop clip range'}
               >
-                <Repeat className="h-4 w-4" />
+                <Repeat className="h-4 w-4"/>
               </Button>
+              {hasSubtitles && (
+                <>
+                  <Button
+                    onClick={handleToggleSubs}
+                    size="sm"
+                    variant={subsEnabled ? 'default' : 'outline'}
+                    disabled={!isReady}
+                    title={subsEnabled ? 'Subtitles on — click to hide' : 'Show subtitles'}
+                  >
+                    <Captions className="h-4 w-4"/>
+                  </Button>
+                  {subtitleTracks.length > 1 && subsEnabled && (
+                    <select
+                      className="text-xs border rounded px-2 py-1 bg-background"
+                      title="Select subtitle track"
+                      value={activeSubIndex}
+                      onChange={e => setActiveSubIndex(Number(e.target.value))}
+                    >
+                      {subtitleTracks.map((t, i) => (
+                        <option key={t.url} value={i}>{t.label}</option>
+                      ))}
+                    </select>
+                  )}
+                </>
+              )}
               <Badge variant="secondary" className="ml-auto tabular-nums">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </Badge>

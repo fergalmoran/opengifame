@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { Pencil, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {useSession} from 'next-auth/react';
+import {Pencil, X} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Badge} from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -26,13 +26,13 @@ interface EditImageDialogProps {
 }
 
 export function EditImageDialog({
-  imageId,
-  imageOwnerId,
-  initialTitle,
-  initialDescription,
-  initialTags,
-}: EditImageDialogProps) {
-  const { data: session } = useSession();
+                                  imageId,
+                                  imageOwnerId,
+                                  initialTitle,
+                                  initialDescription,
+                                  initialTags,
+                                }: EditImageDialogProps) {
+  const {data: session} = useSession();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(initialTitle);
@@ -89,7 +89,7 @@ export function EditImageDialog({
     try {
       const response = await fetch('/api/images/update', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           imageId,
           title: title.trim(),
@@ -117,7 +117,7 @@ export function EditImageDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" title="Edit image">
-          <Pencil className="h-4 w-4" />
+          <Pencil className="h-4 w-4"/>
           Edit
         </Button>
       </DialogTrigger>
@@ -175,7 +175,7 @@ export function EditImageDialog({
                         aria-label={`Remove tag ${tag}`}
                         className="inline-flex items-center justify-center rounded-full hover:text-foreground"
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-3 w-3"/>
                       </button>
                     </Badge>
                   ))}

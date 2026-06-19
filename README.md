@@ -1,6 +1,7 @@
 # OpenGifame - Image Sharing Platform
 
-An open-source image sharing platform similar to Imgur, built with Next.js, Drizzle ORM, PostgreSQL, NextAuth, and shadcn/ui.
+An open-source image sharing platform similar to Imgur, built with Next.js, Drizzle ORM, PostgreSQL, NextAuth, and
+shadcn/ui.
 
 ## Features
 
@@ -141,8 +142,8 @@ The application uses the following main tables:
 
 1. Go to GitHub Settings > Developer settings > OAuth Apps
 2. Create a new OAuth App with:
-   - Homepage URL: `http://localhost:3000`
-   - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+  - Homepage URL: `http://localhost:3000`
+  - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
 3. Add the Client ID and Secret to your `.env.local`
 
 ### Google OAuth
@@ -151,8 +152,8 @@ The application uses the following main tables:
 2. Create a new project or select an existing one
 3. Enable the Google+ API
 4. Create OAuth 2.0 credentials with:
-   - Authorized JavaScript origins: `http://localhost:3000`
-   - Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
+  - Authorized JavaScript origins: `http://localhost:3000`
+  - Authorized redirect URIs: `http://localhost:3000/api/auth/callback/google`
 5. Add the Client ID and Secret to your `.env.local`
 
 ## Project Structure

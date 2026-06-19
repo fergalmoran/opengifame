@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerAuthSession } from '@/lib/server-auth';
-import { db } from '@/lib/db';
-import { images } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
-import { unlink } from 'fs/promises';
-import { join } from 'path';
+import {NextRequest, NextResponse} from 'next/server';
+import {getServerAuthSession} from '@/lib/server-auth';
+import {db} from '@/lib/db';
+import {images} from '@/lib/db/schema';
+import {and, eq} from 'drizzle-orm';
+import {unlink} from 'fs/promises';
+import {join} from 'path';
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -12,17 +12,17 @@ export async function DELETE(request: NextRequest) {
 
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
+        {error: 'Authentication required'},
+        {status: 401}
       );
     }
 
-    const { imageId } = await request.json();
+    const {imageId} = await request.json();
 
     if (!imageId) {
       return NextResponse.json(
-        { error: 'Image ID is required' },
-        { status: 400 }
+        {error: 'Image ID is required'},
+        {status: 400}
       );
     }
 
@@ -43,8 +43,8 @@ export async function DELETE(request: NextRequest) {
 
     if (result.length === 0) {
       return NextResponse.json(
-        { error: 'Image not found or you do not have permission to delete it' },
-        { status: 404 }
+        {error: 'Image not found or you do not have permission to delete it'},
+        {status: 404}
       );
     }
 
@@ -57,12 +57,12 @@ export async function DELETE(request: NextRequest) {
       console.error('Failed to delete image file:', fileError);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({success: true});
   } catch (error) {
     console.error('Error deleting image:', error);
     return NextResponse.json(
-      { error: 'Failed to delete image' },
-      { status: 500 }
+      {error: 'Failed to delete image'},
+      {status: 500}
     );
   }
 }

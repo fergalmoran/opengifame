@@ -29,6 +29,7 @@ For optimal browser compatibility:
 - M4V (.m4v)
 
 Other formats may work depending on browser support:
+
 - AVI (.avi)
 - MKV (.mkv)
 - MOV (.mov)
@@ -54,4 +55,5 @@ For production, ensure your video directory is accessible by the Next.js server 
 
 ## Advanced Video Processing
 
-For advanced needs like format conversion, streaming, or GIF generation, consider implementing a separate microservice rather than handling it within the main application.
+For advanced needs like format conversion, streaming, or GIF generation, consider implementing a separate microservice
+rather than handling it within the main application.

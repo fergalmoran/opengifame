@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'bun:test';
-import { getUserInitials } from '@/lib/user-utils';
+import {describe, expect, test} from 'bun:test';
+import {getUserInitials} from '@/lib/user-utils';
 
 describe('getUserInitials', () => {
   test('returns ? for null', () => {

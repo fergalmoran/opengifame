@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {useSession} from 'next-auth/react';
+import {Trash2} from 'lucide-react';
+import {Button} from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,8 @@ interface DeleteImageButtonProps {
   imageOwnerId: string;
 }
 
-export function DeleteImageButton({ imageId, imageOwnerId }: DeleteImageButtonProps) {
-  const { data: session } = useSession();
+export function DeleteImageButton({imageId, imageOwnerId}: DeleteImageButtonProps) {
+  const {data: session} = useSession();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -36,8 +36,8 @@ export function DeleteImageButton({ imageId, imageOwnerId }: DeleteImageButtonPr
     try {
       const response = await fetch('/api/images/delete', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageId }),
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({imageId}),
       });
 
       if (response.ok) {
@@ -60,7 +60,7 @@ export function DeleteImageButton({ imageId, imageOwnerId }: DeleteImageButtonPr
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive" size="sm" title="Delete image">
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4"/>
           Delete
         </Button>
       </DialogTrigger>

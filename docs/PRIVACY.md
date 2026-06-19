@@ -4,13 +4,16 @@
 
 ## Introduction
 
-Welcome to OpenGifame ("we," "our," or "us"). We are committed to protecting your privacy and being transparent about how we collect, use, and share your information. This Privacy Policy explains our practices regarding your personal information when you use our image sharing platform.
+Welcome to OpenGifame ("we," "our," or "us"). We are committed to protecting your privacy and being transparent about
+how we collect, use, and share your information. This Privacy Policy explains our practices regarding your personal
+information when you use our image sharing platform.
 
 ## Information We Collect
 
 ### Information You Provide Directly
 
-- **Account Information**: When you create an account, we collect your name, email address, and any profile information you choose to provide
+- **Account Information**: When you create an account, we collect your name, email address, and any profile information
+  you choose to provide
 - **Content**: Images, titles, descriptions, comments, and other content you upload or share on our platform
 - **Communications**: Messages you send to us or other users through our platform
 
@@ -19,18 +22,22 @@ Welcome to OpenGifame ("we," "our," or "us"). We are committed to protecting you
 - **Usage Data**: How you interact with our platform, including pages visited, features used, and time spent
 - **Device Information**: Information about your device, browser, and operating system
 - **Log Data**: IP addresses, access times, and technical details about your requests
-- **Cookies and Similar Technologies**: We use cookies and similar technologies to improve your experience and analyze platform usage
+- **Cookies and Similar Technologies**: We use cookies and similar technologies to improve your experience and analyze
+  platform usage
 
 ### Information from Third Parties
 
-- **Authentication Providers**: If you sign in using third-party services (Google, GitHub, etc.), we receive basic profile information as permitted by those services
-- **Analytics Services**: We may use third-party analytics services that collect information about your use of our platform
+- **Authentication Providers**: If you sign in using third-party services (Google, GitHub, etc.), we receive basic
+  profile information as permitted by those services
+- **Analytics Services**: We may use third-party analytics services that collect information about your use of our
+  platform
 
 ## How We Use Your Information
 
 We use the information we collect to:
 
-- **Provide Our Services**: Create and manage your account, enable image uploads, display content, and facilitate voting and commenting
+- **Provide Our Services**: Create and manage your account, enable image uploads, display content, and facilitate voting
+  and commenting
 - **Improve Our Platform**: Analyze usage patterns, fix bugs, and develop new features
 - **Communicate**: Send you important updates, respond to your inquiries, and provide customer support
 - **Security**: Protect against fraud, abuse, and security threats
@@ -65,7 +72,8 @@ We may disclose your information if required by law or if we believe it's necess
 
 ### Business Transfers
 
-If we're involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction.
+If we're involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that
+transaction.
 
 ## Data Retention
 
@@ -108,11 +116,13 @@ We implement appropriate technical and organizational measures to protect your i
 
 ## Children's Privacy
 
-Our platform is not intended for children under 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected such information, we will take steps to delete it promptly.
+Our platform is not intended for children under 13. We do not knowingly collect personal information from children under
+13. If we become aware that we have collected such information, we will take steps to delete it promptly.
 
 ## International Data Transfers
 
-Your information may be transferred to and processed in countries other than your country of residence. We ensure appropriate safeguards are in place for such transfers.
+Your information may be transferred to and processed in countries other than your country of residence. We ensure
+appropriate safeguards are in place for such transfers.
 
 ## Changes to This Policy
 

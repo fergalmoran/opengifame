@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'bun:test';
-import { cn } from '@/lib/utils';
+import {describe, expect, test} from 'bun:test';
+import {cn} from '@/lib/utils';
 
 describe('cn', () => {
   test('returns a single class unchanged', () => {
@@ -15,7 +15,7 @@ describe('cn', () => {
   });
 
   test('handles conditional object syntax', () => {
-    expect(cn({ flex: true, hidden: false })).toBe('flex');
+    expect(cn({flex: true, hidden: false})).toBe('flex');
   });
 
   test('resolves conflicting tailwind classes (last wins via twMerge)', () => {

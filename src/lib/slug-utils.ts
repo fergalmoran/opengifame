@@ -1,6 +1,6 @@
-import { db } from '@/lib/db';
-import { images, users } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import {db} from '@/lib/db';
+import {images, users} from '@/lib/db/schema';
+import {eq} from 'drizzle-orm';
 
 /**
  * Convert arbitrary text into a lowercase, URL-safe slug,
@@ -17,7 +17,7 @@ export function slugify(input: string): string {
 
 async function slugExists(slug: string): Promise<boolean> {
   const existing = await db
-    .select({ id: images.id })
+    .select({id: images.id})
     .from(images)
     .where(eq(images.slug, slug))
     .limit(1);
@@ -44,7 +44,7 @@ export async function generateUniqueSlug(title: string): Promise<string> {
 
 async function userSlugExists(slug: string): Promise<boolean> {
   const existing = await db
-    .select({ id: users.id })
+    .select({id: users.id})
     .from(users)
     .where(eq(users.slug, slug))
     .limit(1);

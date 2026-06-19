@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { useSession } from 'next-auth/react';
+import {useState} from 'react';
+import {Input} from '@/components/ui/input';
+import {useSession} from 'next-auth/react';
 
 interface EditableTitleProps {
   imageId: string;
@@ -10,8 +10,8 @@ interface EditableTitleProps {
   imageOwnerId: string;
 }
 
-export function EditableTitle({ imageId, initialTitle, imageOwnerId }: EditableTitleProps) {
-  const { data: session } = useSession();
+export function EditableTitle({imageId, initialTitle, imageOwnerId}: EditableTitleProps) {
+  const {data: session} = useSession();
   const [title, setTitle] = useState(initialTitle || 'Untitled');
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);

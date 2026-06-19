@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'bun:test';
-import { generateRandomTitle } from '@/lib/title-utils';
+import {describe, expect, test} from 'bun:test';
+import {generateRandomTitle} from '@/lib/title-utils';
 
 describe('generateRandomTitle', () => {
   test('returns a non-empty string', () => {
@@ -19,7 +19,7 @@ describe('generateRandomTitle', () => {
   });
 
   test('returns different values on successive calls (random)', () => {
-    const results = new Set(Array.from({ length: 10 }, () => generateRandomTitle()));
+    const results = new Set(Array.from({length: 10}, () => generateRandomTitle()));
     // With faker randomness, 10 calls should not all be identical
     expect(results.size).toBeGreaterThan(1);
   });

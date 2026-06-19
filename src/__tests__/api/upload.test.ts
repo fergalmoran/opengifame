@@ -1,4 +1,4 @@
-import { mock, describe, test, expect, beforeEach } from 'bun:test';
+import {beforeEach, describe, expect, mock, test} from 'bun:test';
 
 const state = {
   session: null as any,
@@ -39,7 +39,7 @@ mock.module('next-auth', () => ({
   getServerSession: async () => state.session,
 }));
 
-mock.module('@/lib/auth', () => ({ authOptions: {} }));
+mock.module('@/lib/auth', () => ({authOptions: {}}));
 
 mock.module('@/lib/db', () => ({
   db: {
@@ -54,11 +54,13 @@ mock.module('@/lib/db', () => ({
 }));
 
 mock.module('fs/promises', () => ({
-  writeFile: async () => {},
-  mkdir: async () => {},
+  writeFile: async () => {
+  },
+  mkdir: async () => {
+  },
 }));
 
-const { POST } = await import('@/app/api/images/upload/route');
+const {POST} = await import('@/app/api/images/upload/route');
 
 function makeUploadRequest(opts: {
   file?: { content: string; type: string; name: string };
@@ -67,14 +69,14 @@ function makeUploadRequest(opts: {
 }) {
   const fd = new FormData();
   if (opts.file) {
-    fd.append('file', new Blob([opts.file.content], { type: opts.file.type }), opts.file.name);
+    fd.append('file', new Blob([opts.file.content], {type: opts.file.type}), opts.file.name);
   }
   if (opts.title !== undefined) fd.append('title', opts.title);
   if (opts.tags !== undefined) fd.append('tags', opts.tags);
-  return new Request('http://localhost/api/images/upload', { method: 'POST', body: fd }) as any;
+  return new Request('http://localhost/api/images/upload', {method: 'POST', body: fd}) as any;
 }
 
-const validFile = { content: 'fake-image-bytes', type: 'image/jpeg', name: 'photo.jpg' };
+const validFile = {content: 'fake-image-bytes', type: 'image/jpeg', name: 'photo.jpg'};
 
 beforeEach(() => {
   state.session = null;
@@ -84,12 +86,12 @@ beforeEach(() => {
 
 describe('POST /api/images/upload', () => {
   test('401 when unauthenticated', async () => {
-    const res = await POST(makeUploadRequest({ file: validFile }));
+    const res = await POST(makeUploadRequest({file: validFile}));
     expect(res.status).toBe(401);
   });
 
   test('400 when no file is included', async () => {
-    state.session = { user: { id: 'u1' } };
+    state.session = {user: {id: 'u1'}};
     const res = await POST(makeUploadRequest({}));
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -97,9 +99,9 @@ describe('POST /api/images/upload', () => {
   });
 
   test('400 when file is not an image', async () => {
-    state.session = { user: { id: 'u1' } };
+    state.session = {user: {id: 'u1'}};
     const res = await POST(
-      makeUploadRequest({ file: { content: 'data', type: 'application/pdf', name: 'doc.pdf' } })
+      makeUploadRequest({file: {content: 'data', type: 'application/pdf', name: 'doc.pdf'}})
     );
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -107,12 +109,12 @@ describe('POST /api/images/upload', () => {
   });
 
   test('200 returns id/slug/url on successful upload (no title, no tags)', async () => {
-    state.session = { user: { id: 'u1' } };
+    state.session = {user: {id: 'u1'}};
     // Slot for generateUniqueSlug's slug-existence check
     state.selectQueue.push([]);
-    state.insertResult = [{ id: 'img-1', slug: 'happy-cat', url: '/uploads/img.jpg' }];
+    state.insertResult = [{id: 'img-1', slug: 'happy-cat', url: '/uploads/img.jpg'}];
 
-    const res = await POST(makeUploadRequest({ file: validFile }));
+    const res = await POST(makeUploadRequest({file: validFile}));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.id).toBe('img-1');
@@ -121,23 +123,23 @@ describe('POST /api/images/upload', () => {
   });
 
   test('200 with custom title', async () => {
-    state.session = { user: { id: 'u1' } };
+    state.session = {user: {id: 'u1'}};
     state.selectQueue.push([]); // slug check
-    state.insertResult = [{ id: 'img-2', slug: 'my-photo', url: '/uploads/img.jpg' }];
+    state.insertResult = [{id: 'img-2', slug: 'my-photo', url: '/uploads/img.jpg'}];
 
-    const res = await POST(makeUploadRequest({ file: validFile, title: 'My Photo' }));
+    const res = await POST(makeUploadRequest({file: validFile, title: 'My Photo'}));
     expect(res.status).toBe(200);
     expect((await res.json()).id).toBe('img-2');
   });
 
   test('200 and processes comma-separated tags', async () => {
-    state.session = { user: { id: 'u1' } };
+    state.session = {user: {id: 'u1'}};
     state.selectQueue.push([]);             // slug uniqueness check
     state.selectQueue.push([]);             // 'cats' tag lookup → does not exist (triggers insert)
-    state.selectQueue.push([{ id: 't1' }]); // 'funny' tag lookup → already exists
-    state.insertResult = [{ id: 'img-3', slug: 'test-slug', url: '/uploads/img.jpg' }];
+    state.selectQueue.push([{id: 't1'}]); // 'funny' tag lookup → already exists
+    state.insertResult = [{id: 'img-3', slug: 'test-slug', url: '/uploads/img.jpg'}];
 
-    const res = await POST(makeUploadRequest({ file: validFile, tags: 'cats, funny' }));
+    const res = await POST(makeUploadRequest({file: validFile, tags: 'cats, funny'}));
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.id).toBe('img-3');

@@ -4,7 +4,9 @@
 
 ## Introduction
 
-This document outlines OpenGifame's compliance with the General Data Protection Regulation (GDPR) and your rights as a data subject. The GDPR gives you specific rights regarding your personal data, and we are committed to respecting and facilitating these rights.
+This document outlines OpenGifame's compliance with the General Data Protection Regulation (GDPR) and your rights as a
+data subject. The GDPR gives you specific rights regarding your personal data, and we are committed to respecting and
+facilitating these rights.
 
 ## Your Rights Under GDPR
 
@@ -94,7 +96,8 @@ Contact us at [privacy@opengifame.com] to discuss your objection.
 
 ### 8. Rights Related to Automated Decision Making (Article 22)
 
-We do not use automated decision-making or profiling that significantly affects you. Our recommendation algorithms are designed to enhance user experience and do not make decisions that have legal or similarly significant effects.
+We do not use automated decision-making or profiling that significantly affects you. Our recommendation algorithms are
+designed to enhance user experience and do not make decisions that have legal or similarly significant effects.
 
 ## Complete Account Deletion Guide
 
@@ -144,10 +147,10 @@ If you cannot access your account:
 
 1. **Email** us at [privacy@opengifame.com]
 2. **Include** the following information:
-   - Full name associated with the account
-   - Email address used for registration
-   - Approximate account creation date
-   - Reason you cannot access the account
+  - Full name associated with the account
+  - Email address used for registration
+  - Approximate account creation date
+  - Reason you cannot access the account
 3. **Verification**: We may ask for additional verification
 4. **Processing**: We'll process your request within 30 days
 
@@ -266,8 +269,8 @@ We maintain detailed records of:
 
 If you believe we have not complied with GDPR:
 
-**EU Residents**: Contact your national data protection authority
-**UK Residents**: Information Commissioner's Office (ICO)
+**EU Residents**: Contact your national data protection authority **UK Residents**: Information Commissioner's Office
+(ICO)
 
 - Website: ico.org.uk
 - Helpline: 0303 123 1113
@@ -296,4 +299,5 @@ We may update this GDPR compliance guide to reflect:
 
 ---
 
-*This document was last updated on July 5, 2025. For questions about GDPR compliance, contact our privacy team at [privacy@opengifame.com].*
+*This document was last updated on July 5, 2025. For questions about GDPR compliance, contact our privacy team
+at [privacy@opengifame.com].*

@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useSession } from 'next-auth/react';
-import { formatDate } from '@/lib/date-utils';
+import {useState} from 'react';
+import {Card, CardContent, CardHeader} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {useSession} from 'next-auth/react';
+import {formatDate} from '@/lib/date-utils';
 
 interface Comment {
   id: string;
@@ -21,8 +21,8 @@ interface CommentsProps {
   initialComments: Comment[];
 }
 
-export function Comments({ imageId, initialComments }: CommentsProps) {
-  const { data: session } = useSession();
+export function Comments({imageId, initialComments}: CommentsProps) {
+  const {data: session} = useSession();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +60,7 @@ export function Comments({ imageId, initialComments }: CommentsProps) {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-4">Comments ({comments.length})</h3>
-        
+
         {/* Add Comment Form - Only for authenticated users */}
         {session ? (
           <Card className="mb-6">
@@ -72,8 +72,8 @@ export function Comments({ imageId, initialComments }: CommentsProps) {
                   placeholder="Add a comment..."
                   disabled={isSubmitting}
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isSubmitting || !newComment.trim()}
                   className="w-full"
                 >

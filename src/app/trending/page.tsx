@@ -1,10 +1,11 @@
 export const dynamic = "force-dynamic";
 
-import { db } from "@/lib/db";
-import { images, users } from "@/lib/db/schema";
-import { desc, sql, eq } from "drizzle-orm";
-import { ImageCard } from "@/components/image-card";
-import { fetchImageMetadata } from "@/lib/image-utils";
+import {db} from "@/lib/db";
+import {images, users} from "@/lib/db/schema";
+import {desc, eq, sql} from "drizzle-orm";
+import {ImageCard} from "@/components/image-card";
+import {fetchImageMetadata} from "@/lib/image-utils";
+
 export default async function TrendingPage() {
 
   // Get trending images based on score (upvotes - downvotes) and recent activity
@@ -34,7 +35,7 @@ export default async function TrendingPage() {
     .limit(20);
 
   // Fetch metadata for all images
-  const { tagsByImage, commentCountMap, userVotes } = await fetchImageMetadata(
+  const {tagsByImage, commentCountMap, userVotes} = await fetchImageMetadata(
     imagesData.map(img => ({
       ...img,
       uploadedBy: img.uploadedBy || "",

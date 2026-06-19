@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import {useState} from 'react';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
-import { getUserInitials } from '@/lib/user-utils';
+import {cn} from '@/lib/utils';
+import {getUserInitials} from '@/lib/user-utils';
 
 interface UserAvatarProps {
   src?: string | null;
@@ -18,7 +18,7 @@ interface UserAvatarProps {
  * optimization. Falls back to the user's initials when there is no image or
  * the image fails to load.
  */
-export function UserAvatar({ src, name, size = 40, className }: UserAvatarProps) {
+export function UserAvatar({src, name, size = 40, className}: UserAvatarProps) {
   const [errored, setErrored] = useState(false);
   const showImage = Boolean(src) && !errored;
 
@@ -28,7 +28,7 @@ export function UserAvatar({ src, name, size = 40, className }: UserAvatarProps)
         'relative shrink-0 overflow-hidden rounded-full border bg-muted flex items-center justify-center',
         className
       )}
-      style={{ width: size, height: size }}
+      style={{width: size, height: size}}
     >
       {showImage ? (
         <Image
@@ -42,7 +42,7 @@ export function UserAvatar({ src, name, size = 40, className }: UserAvatarProps)
       ) : (
         <span
           className="font-medium text-muted-foreground"
-          style={{ fontSize: Math.max(10, Math.round(size * 0.4)) }}
+          style={{fontSize: Math.max(10, Math.round(size * 0.4))}}
         >
           {getUserInitials(name)}
         </span>

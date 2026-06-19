@@ -23,7 +23,7 @@ function applyTheme(resolved: ResolvedTheme) {
   root.style.colorScheme = resolved;
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({children}: { children: React.ReactNode }) {
   const [theme, setThemeState] = React.useState<Theme>('system');
   const [resolvedTheme, setResolvedTheme] = React.useState<ResolvedTheme>('light');
 
@@ -55,7 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = React.useMemo(
-    () => ({ theme, resolvedTheme, setTheme }),
+    () => ({theme, resolvedTheme, setTheme}),
     [theme, resolvedTheme, setTheme],
   );
 

@@ -1,15 +1,16 @@
-import { NextAuthOptions } from "next-auth";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import {NextAuthOptions} from "next-auth";
+import {DrizzleAdapter} from "@auth/drizzle-adapter";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 // TODO: Uncomment when database authentication is implemented
 // import bcrypt from 'bcryptjs';
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { generateUniqueUserSlug } from "@/lib/slug-utils";
+import {db} from "@/lib/db";
+import {users} from "@/lib/db/schema";
+import {eq, count} from "drizzle-orm";
+import {generateUniqueUserSlug} from "@/lib/slug-utils";
+import {Permission} from "@/lib/permissions";
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
@@ -17,8 +18,8 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: {label: "Email", type: "email"},
+        password: {label: "Password", type: "password"},
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -50,17 +51,19 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
   },
   callbacks: {
-    async session({ session, user }) {
+    async session({session, user}) {
       if (session.user && user) {
         session.user.id = user.id;
 
         // The DrizzleAdapter strips non-standard fields before passing `user`
         // to callbacks, so we must query slug directly from the DB.
         const [row] = await db
-          .select({ slug: users.slug })
+          .select({slug: users.slug, permissions: users.permissions})
           .from(users)
           .where(eq(users.id, user.id))
           .limit(1);
+
+        session.user.permissions = row?.permissions ?? 0;
 
         let slug = row?.slug ?? undefined;
 
@@ -68,7 +71,7 @@ export const authOptions: NextAuthOptions = {
           // Backfill for users who existed before slugs were introduced.
           const base = user.name || user.email?.split('@')[0] || 'user';
           slug = await generateUniqueUserSlug(base);
-          await db.update(users).set({ slug }).where(eq(users.id, user.id));
+          await db.update(users).set({slug}).where(eq(users.id, user.id));
         }
 
         session.user.slug = slug;
@@ -77,10 +80,17 @@ export const authOptions: NextAuthOptions = {
     },
   },
   events: {
-    async createUser({ user }) {
+    async createUser({user}) {
       const base = user.name || user.email?.split('@')[0] || 'user';
       const slug = await generateUniqueUserSlug(base);
-      await db.update(users).set({ slug }).where(eq(users.id, user.id));
+
+      const [result] = await db.select({total: count()}).from(users);
+      const isFirstUser = (result?.total ?? 0) === 1;
+
+      await db
+        .update(users)
+        .set({slug, permissions: isFirstUser ? Permission.Admin : Permission.None})
+        .where(eq(users.id, user.id));
     },
   },
 };

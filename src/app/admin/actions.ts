@@ -1,0 +1,48 @@
+"use server";
+
+import {db} from "@/lib/db";
+import {users, images} from "@/lib/db/schema";
+import {eq} from "drizzle-orm";
+import {getServerAuthSession} from "@/lib/server-auth";
+import {hasPermission, Permission} from "@/lib/permissions";
+import {rename, mkdir} from "fs/promises";
+import {join} from "path";
+
+export async function updateUserPermissions(userId: string, permissions: number) {
+  const session = await getServerAuthSession();
+  if (!session || !hasPermission(session.user.permissions, Permission.Admin)) {
+    throw new Error("Unauthorized");
+  }
+
+  await db.update(users).set({permissions}).where(eq(users.id, userId));
+}
+
+export async function deleteUser(userId: string) {
+  const session = await getServerAuthSession();
+  if (!session || !hasPermission(session.user.permissions, Permission.Admin)) {
+    throw new Error("Unauthorized");
+  }
+  if (userId === session.user.id) {
+    throw new Error("Cannot delete your own account");
+  }
+
+  const userImages = await db
+    .select({filename: images.filename})
+    .from(images)
+    .where(eq(images.uploadedBy, userId));
+
+  // Cascade delete handles DB rows; move files to __deleted for later cleanup.
+  await db.delete(users).where(eq(users.id, userId));
+
+  if (userImages.length > 0) {
+    const uploadsDir = join(process.cwd(), "public", "uploads");
+    const deletedDir = join(uploadsDir, "__deleted");
+    await mkdir(deletedDir, {recursive: true});
+
+    await Promise.allSettled(
+      userImages.map(({filename}) =>
+        rename(join(uploadsDir, filename), join(deletedDir, filename))
+      )
+    );
+  }
+}

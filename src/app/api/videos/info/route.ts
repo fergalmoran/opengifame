@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
+import {NextRequest, NextResponse} from 'next/server';
+import {promises as fs} from 'fs';
 import path from 'path';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import {execFile} from 'child_process';
+import {promisify} from 'util';
 
 const execFileAsync = promisify(execFile);
 
@@ -17,31 +17,31 @@ function isPathAllowed(filePath: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const {searchParams} = new URL(request.url);
   const filePath = searchParams.get('path');
 
   if (!filePath) {
-    return NextResponse.json({ error: 'Path parameter is required' }, { status: 400 });
+    return NextResponse.json({error: 'Path parameter is required'}, {status: 400});
   }
 
   if (filePath.includes('..')) {
-    return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    return NextResponse.json({error: 'Invalid path'}, {status: 400});
   }
 
   const normalized = path.normalize(filePath);
 
   if (!isPathAllowed(normalized)) {
-    return NextResponse.json({ error: 'Path not allowed' }, { status: 403 });
+    return NextResponse.json({error: 'Path not allowed'}, {status: 403});
   }
 
   try {
     await fs.access(normalized);
   } catch {
-    return NextResponse.json({ error: 'File not found' }, { status: 404 });
+    return NextResponse.json({error: 'File not found'}, {status: 404});
   }
 
   try {
-    const { stdout } = await execFileAsync('ffprobe', [
+    const {stdout} = await execFileAsync('ffprobe', [
       '-v', 'quiet',
       '-print_format', 'json',
       '-show_format',
@@ -51,9 +51,9 @@ export async function GET(request: NextRequest) {
     const probe = JSON.parse(stdout) as { format?: { duration?: string } };
     const duration = parseFloat(probe.format?.duration ?? '0');
 
-    return NextResponse.json({ duration });
+    return NextResponse.json({duration});
   } catch (err) {
     console.error('ffprobe error:', err);
-    return NextResponse.json({ error: 'Could not probe video' }, { status: 500 });
+    return NextResponse.json({error: 'Could not probe video'}, {status: 500});
   }
 }

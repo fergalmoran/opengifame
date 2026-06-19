@@ -1,6 +1,6 @@
-import { createHash } from 'crypto';
-import { mkdirSync, readdirSync } from 'fs';
-import { spawn, ChildProcess } from 'child_process';
+import {createHash} from 'crypto';
+import {mkdirSync, readdirSync} from 'fs';
+import {ChildProcess, spawn} from 'child_process';
 import path from 'path';
 import os from 'os';
 
@@ -34,9 +34,9 @@ export function getOrStartHls(filePath: string): HlsEntry {
   if (existing) return existing;
 
   const outputDir = hlsOutputDir(filePath);
-  mkdirSync(outputDir, { recursive: true });
+  mkdirSync(outputDir, {recursive: true});
 
-  const entry: HlsEntry = { outputDir, process: null, done: false };
+  const entry: HlsEntry = {outputDir, process: null, done: false};
   cache.set(filePath, entry);
 
   const proc = spawn('ffmpeg', [
@@ -55,7 +55,8 @@ export function getOrStartHls(filePath: string): HlsEntry {
 
   entry.process = proc;
 
-  proc.stderr.on('data', () => { /* suppress ffmpeg noise */ });
+  proc.stderr.on('data', () => { /* suppress ffmpeg noise */
+  });
 
   proc.on('close', (code) => {
     entry.done = true;

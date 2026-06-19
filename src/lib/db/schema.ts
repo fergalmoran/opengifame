@@ -1,16 +1,17 @@
-import { pgTable, text, uuid, timestamp, integer, boolean, primaryKey } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
-import type { AdapterAccount } from '@auth/core/adapters';
+import {boolean, integer, pgTable, primaryKey, text, timestamp, uuid} from 'drizzle-orm/pg-core';
+import {relations} from 'drizzle-orm';
+import type {AdapterAccount} from '@auth/core/adapters';
 
 // Users table for NextAuth
 export const users = pgTable('user', {
   id: text('id').notNull().primaryKey(),
   name: text('name'),
   email: text('email').notNull(),
-  emailVerified: timestamp('emailVerified', { mode: 'date' }),
+  emailVerified: timestamp('emailVerified', {mode: 'date'}),
   image: text('image'),
   bio: text('bio'),
   slug: text('slug').unique(),
+  permissions: integer('permissions').default(0).notNull(),
 });
 
 export const accounts = pgTable(
@@ -18,7 +19,7 @@ export const accounts = pgTable(
   {
     userId: text('userId')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+      .references(() => users.id, {onDelete: 'cascade'}),
     type: text('type').$type<AdapterAccount['type']>().notNull(),
     provider: text('provider').notNull(),
     providerAccountId: text('providerAccountId').notNull(),
@@ -30,19 +31,17 @@ export const accounts = pgTable(
     id_token: text('id_token'),
     session_state: text('session_state'),
   },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  })
+  (account) => [
+    primaryKey({columns: [account.provider, account.providerAccountId]}),
+  ]
 );
 
 export const sessions = pgTable('session', {
   sessionToken: text('sessionToken').notNull().primaryKey(),
   userId: text('userId')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  expires: timestamp('expires', { mode: 'date' }).notNull(),
+    .references(() => users.id, {onDelete: 'cascade'}),
+  expires: timestamp('expires', {mode: 'date'}).notNull(),
 });
 
 export const verificationTokens = pgTable(
@@ -50,11 +49,11 @@ export const verificationTokens = pgTable(
   {
     identifier: text('identifier').notNull(),
     token: text('token').notNull(),
-    expires: timestamp('expires', { mode: 'date' }).notNull(),
+    expires: timestamp('expires', {mode: 'date'}).notNull(),
   },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
+  (vt) => [
+    primaryKey({columns: [vt.identifier, vt.token]}),
+  ]
 );
 
 // Image sharing specific tables
@@ -70,7 +69,7 @@ export const images = pgTable('images', {
   url: text('url').notNull(),
   uploadedBy: text('uploaded_by')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => users.id, {onDelete: 'cascade'}),
   upvotes: integer('upvotes').default(0).notNull(),
   downvotes: integer('downvotes').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -82,7 +81,7 @@ export const tags = pgTable('tags', {
   name: text('name').unique().notNull(),
   createdBy: text('created_by')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => users.id, {onDelete: 'cascade'}),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -91,14 +90,14 @@ export const imageTags = pgTable(
   {
     imageId: uuid('image_id')
       .notNull()
-      .references(() => images.id, { onDelete: 'cascade' }),
+      .references(() => images.id, {onDelete: 'cascade'}),
     tagId: uuid('tag_id')
       .notNull()
-      .references(() => tags.id, { onDelete: 'cascade' }),
+      .references(() => tags.id, {onDelete: 'cascade'}),
   },
-  (it) => ({
-    compoundKey: primaryKey({ columns: [it.imageId, it.tagId] }),
-  })
+  (it) => [
+    primaryKey({columns: [it.imageId, it.tagId]}),
+  ]
 );
 
 export const votes = pgTable(
@@ -107,10 +106,10 @@ export const votes = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     imageId: uuid('image_id')
       .notNull()
-      .references(() => images.id, { onDelete: 'cascade' }),
+      .references(() => images.id, {onDelete: 'cascade'}),
     userId: text('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+      .references(() => users.id, {onDelete: 'cascade'}),
     isUpvote: boolean('is_upvote').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
   }
@@ -121,17 +120,17 @@ export const comments = pgTable('comments', {
   content: text('content').notNull(),
   imageId: uuid('image_id')
     .notNull()
-    .references(() => images.id, { onDelete: 'cascade' }),
+    .references(() => images.id, {onDelete: 'cascade'}),
   authorId: text('author_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => users.id, {onDelete: 'cascade'}),
   parentId: uuid('parent_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({many}) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   images: many(images),
@@ -140,7 +139,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   comments: many(comments),
 }));
 
-export const imagesRelations = relations(images, ({ one, many }) => ({
+export const imagesRelations = relations(images, ({one, many}) => ({
   uploadedBy: one(users, {
     fields: [images.uploadedBy],
     references: [users.id],
@@ -150,7 +149,7 @@ export const imagesRelations = relations(images, ({ one, many }) => ({
   comments: many(comments),
 }));
 
-export const tagsRelations = relations(tags, ({ one, many }) => ({
+export const tagsRelations = relations(tags, ({one, many}) => ({
   createdBy: one(users, {
     fields: [tags.createdBy],
     references: [users.id],
@@ -158,7 +157,7 @@ export const tagsRelations = relations(tags, ({ one, many }) => ({
   imageTags: many(imageTags),
 }));
 
-export const imageTagsRelations = relations(imageTags, ({ one }) => ({
+export const imageTagsRelations = relations(imageTags, ({one}) => ({
   image: one(images, {
     fields: [imageTags.imageId],
     references: [images.id],
@@ -169,7 +168,7 @@ export const imageTagsRelations = relations(imageTags, ({ one }) => ({
   }),
 }));
 
-export const votesRelations = relations(votes, ({ one }) => ({
+export const votesRelations = relations(votes, ({one}) => ({
   image: one(images, {
     fields: [votes.imageId],
     references: [images.id],
@@ -180,7 +179,7 @@ export const votesRelations = relations(votes, ({ one }) => ({
   }),
 }));
 
-export const commentsRelations = relations(comments, ({ one, many }) => ({
+export const commentsRelations = relations(comments, ({one, many}) => ({
   image: one(images, {
     fields: [comments.imageId],
     references: [images.id],

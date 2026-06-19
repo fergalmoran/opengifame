@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {NextRequest, NextResponse} from 'next/server';
 import path from 'path';
-import { getOrStartHls, readySegmentCount } from '@/lib/hls-cache';
+import {getOrStartHls, readySegmentCount} from '@/lib/hls-cache';
 
 const ALLOWED_PATH_PREFIXES = [
   '/mnt/storage/media',
@@ -13,16 +13,16 @@ function isPathAllowed(filePath: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const {searchParams} = new URL(request.url);
   const filePath = searchParams.get('path');
 
   if (!filePath || filePath.includes('..')) {
-    return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    return NextResponse.json({error: 'Invalid path'}, {status: 400});
   }
 
   const normalized = path.normalize(filePath);
   if (!isPathAllowed(normalized)) {
-    return NextResponse.json({ error: 'Path not allowed' }, { status: 403 });
+    return NextResponse.json({error: 'Path not allowed'}, {status: 403});
   }
 
   const entry = getOrStartHls(normalized);

@@ -1,8 +1,8 @@
-import { Metadata } from 'next';
+import {Metadata} from 'next';
 import ReactMarkdown from 'react-markdown';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
-import { notFound } from 'next/navigation';
+import {existsSync, readFileSync} from 'fs';
+import {join} from 'path';
+import {notFound} from 'next/navigation';
 
 interface Props {
   params: Promise<{ page: string }>;
@@ -12,8 +12,8 @@ function getDocPath(page: string) {
   return join(process.cwd(), 'docs', `${page.toUpperCase()}.md`);
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { page } = await params;
+export async function generateMetadata({params}: Props): Promise<Metadata> {
+  const {page} = await params;
   const slug = page.toUpperCase();
   const titles: Record<string, string> = {
     PRIVACY: 'Privacy Policy - OpenGifame',
@@ -29,8 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function DocsPage({ params }: Props) {
-  const { page } = await params;
+export default async function DocsPage({params}: Props) {
+  const {page} = await params;
   const docPath = getDocPath(page);
 
   if (!existsSync(docPath)) {
@@ -44,32 +44,32 @@ export default async function DocsPage({ params }: Props) {
       <div className="prose prose-slate dark:prose-invert max-w-none">
         <ReactMarkdown
           components={{
-            h1: ({ children }) => (
+            h1: ({children}) => (
               <h1 className="text-4xl font-bold mb-6 text-foreground">{children}</h1>
             ),
-            h2: ({ children }) => (
+            h2: ({children}) => (
               <h2 className="text-2xl font-semibold mt-8 mb-4 text-foreground">{children}</h2>
             ),
-            h3: ({ children }) => (
+            h3: ({children}) => (
               <h3 className="text-xl font-medium mt-6 mb-3 text-foreground">{children}</h3>
             ),
-            h4: ({ children }) => (
+            h4: ({children}) => (
               <h4 className="text-lg font-medium mt-4 mb-2 text-foreground">{children}</h4>
             ),
-            p: ({ children }) => (
+            p: ({children}) => (
               <p className="mb-4 text-muted-foreground leading-relaxed">{children}</p>
             ),
-            ul: ({ children }) => (
+            ul: ({children}) => (
               <ul className="list-disc pl-6 mb-4 text-muted-foreground">{children}</ul>
             ),
-            ol: ({ children }) => (
+            ol: ({children}) => (
               <ol className="list-decimal pl-6 mb-4 text-muted-foreground">{children}</ol>
             ),
-            li: ({ children }) => <li className="mb-2">{children}</li>,
-            strong: ({ children }) => (
+            li: ({children}) => <li className="mb-2">{children}</li>,
+            strong: ({children}) => (
               <strong className="font-semibold text-foreground">{children}</strong>
             ),
-            a: ({ href, children }) => (
+            a: ({href, children}) => (
               <a
                 href={href}
                 className="text-primary hover:underline"
@@ -79,13 +79,13 @@ export default async function DocsPage({ params }: Props) {
                 {children}
               </a>
             ),
-            hr: () => <hr className="my-8 border-border" />,
-            blockquote: ({ children }) => (
+            hr: () => <hr className="my-8 border-border"/>,
+            blockquote: ({children}) => (
               <blockquote className="border-l-4 border-border pl-4 italic text-muted-foreground">
                 {children}
               </blockquote>
             ),
-            code: ({ children }) => (
+            code: ({children}) => (
               <code className="bg-muted px-2 py-1 rounded text-sm font-mono">{children}</code>
             ),
           }}

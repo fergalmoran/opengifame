@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import {createContext, useCallback, useContext, useEffect, useState,} from 'react';
+import {usePathname, useRouter} from 'next/navigation';
+import {useSession} from 'next-auth/react';
 
 interface PasteUploadContextValue {
   /** The most recently pasted image, awaiting consumption by the upload page. */
@@ -46,10 +40,10 @@ function extractImageFile(clipboardData: DataTransfer | null): File | null {
   });
 }
 
-export function PasteUploadProvider({ children }: { children: React.ReactNode }) {
+export function PasteUploadProvider({children}: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { status } = useSession();
+  const {status} = useSession();
   const [pastedFile, setPastedFile] = useState<File | null>(null);
 
   const clearPastedFile = useCallback(() => setPastedFile(null), []);
@@ -74,7 +68,7 @@ export function PasteUploadProvider({ children }: { children: React.ReactNode })
   }, [status, pathname, router]);
 
   return (
-    <PasteUploadContext.Provider value={{ pastedFile, clearPastedFile }}>
+    <PasteUploadContext.Provider value={{pastedFile, clearPastedFile}}>
       {children}
     </PasteUploadContext.Provider>
   );

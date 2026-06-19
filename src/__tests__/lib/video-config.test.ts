@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'bun:test';
-import { getMimeType, getDefaultVideoPath, videoConfig } from '@/lib/video-config';
+import {describe, expect, test} from 'bun:test';
+import {getDefaultVideoPath, getMimeType, videoConfig} from '@/lib/video-config';
 
 describe('getMimeType', () => {
   test('.mp4 → video/mp4', () => {
