@@ -8,6 +8,8 @@ import {join} from 'path';
 import {eq} from 'drizzle-orm';
 import {generateRandomTitle} from '@/lib/title-utils';
 import {generateUniqueSlug} from '@/lib/slug-utils';
+import {moderateContent} from '@/lib/content-moderation';
+import {extractClientMetadata, parseUserAgent} from '@/lib/client-metadata';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,14 +47,28 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop();
     const filename = `${timestamp}-${Math.random().toString(36).substring(2)}.${extension}`;
 
+    // Buffer the file in memory so we can run moderation before touching the filesystem
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const clientMetadata = extractClientMetadata(request);
+
+    const moderation = await moderateContent(buffer, file.type);
+    if (moderation.blocked) {
+      console.warn('[upload] rejected by content moderation', {
+        reason: moderation.reason,
+        ip: clientMetadata.ip,
+        userId: session.user.id,
+      });
+      return NextResponse.json({error: 'Upload rejected: content policy violation'}, {status: 422});
+    }
+
     // Create upload directory if it doesn't exist
     const uploadDir = join(process.cwd(), 'public', 'uploads');
     await mkdir(uploadDir, {recursive: true});
 
-    // Save file
+    // Save file only after moderation passes
     const filepath = join(uploadDir, filename);
-    const bytes = await file.arrayBuffer();
-    await writeFile(filepath, Buffer.from(bytes));
+    await writeFile(filepath, buffer);
 
     // Create image record
     console.log('Creating image record in database...');
@@ -71,6 +87,9 @@ export async function POST(request: NextRequest) {
         size: file.size,
         url: imageUrl,
         uploadedBy: session.user.id,
+        uploaderIp: clientMetadata.ip,
+        browser: parseUserAgent(clientMetadata.userAgent),
+        clientMetadata,
       })
       .returning();
 

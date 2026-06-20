@@ -7,6 +7,8 @@ import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Badge} from '@/components/ui/badge';
+import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
+import {AlertCircle} from 'lucide-react';
 import {usePasteUpload} from '@/components/paste-upload-provider';
 import {Upload, X} from 'lucide-react';
 
@@ -19,6 +21,7 @@ export default function UploadPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const {pastedFile, clearPastedFile} = usePasteUpload();
 
@@ -59,6 +62,7 @@ export default function UploadPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      setError(null);
       loadFile(selectedFile);
     }
   };
@@ -92,6 +96,7 @@ export default function UploadPage() {
     if (!file) return;
 
     setUploading(true);
+    setError(null);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('title', title);
@@ -107,12 +112,13 @@ export default function UploadPage() {
       if (response.ok) {
         const result = await response.json();
         router.push(`/image/${result.slug}`);
+      } else if (response.status === 422) {
+        setError('This image was rejected by our content policy. Please upload something appropriate.');
       } else {
-        alert('Upload failed');
+        setError('Upload failed — please try again.');
       }
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert('Upload failed');
+    } catch {
+      setError('Upload failed — please check your connection and try again.');
     } finally {
       setUploading(false);
     }
@@ -251,6 +257,14 @@ export default function UploadPage() {
                   </p>
                 </div>
               </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4"/>
+                  <AlertTitle>Upload rejected</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
               <Button
                 type="submit"
