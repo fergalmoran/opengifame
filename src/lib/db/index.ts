@@ -1,13 +1,11 @@
 import {drizzle} from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
+import {env} from '@/env';
 
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:hackme@localhost:5432/opengifame';
-
-// Handle connection string more robustly
-const client = postgres(connectionString, {
-  ssl: process.env.DB_SSL === 'false' ? false : process.env.NODE_ENV === 'production' ? 'require' : false,
-  max: 1, // Limit connections for serverless
+const client = postgres(env.DATABASE_URL, {
+  ssl: env.DB_SSL === 'false' ? false : process.env.NODE_ENV === 'production' ? 'require' : false,
+  max: 1,
 });
 
 export const db = drizzle(client, {schema});

@@ -1,3 +1,5 @@
+import {env} from '@/env';
+
 type Likelihood = 'UNKNOWN' | 'VERY_UNLIKELY' | 'UNLIKELY' | 'POSSIBLE' | 'LIKELY' | 'VERY_LIKELY';
 
 const BLOCKED_LIKELIHOODS = new Set<Likelihood>(['LIKELY', 'VERY_LIKELY']);
@@ -12,7 +14,7 @@ export interface ModerationResult {
 }
 
 async function checkGoogleVision(buffer: Buffer): Promise<ModerationResult | null> {
-  const apiKey = process.env.GOOGLE_VISION_API_KEY;
+  const apiKey = env.GOOGLE_VISION_API_KEY;
   if (!apiKey) return null;
 
   const res = await fetch(
@@ -42,21 +44,17 @@ async function checkGoogleVision(buffer: Buffer): Promise<ModerationResult | nul
 }
 
 function getThresholds() {
-  const parse = (env: string | undefined, fallback: number) => {
-    const n = parseInt(env ?? '', 10);
-    return [0, 2, 4, 6].includes(n) ? n : fallback;
-  };
   return {
-    Sexual:   parse(process.env.MODERATION_THRESHOLD_SEXUAL,   2),
-    Violence: parse(process.env.MODERATION_THRESHOLD_VIOLENCE, 4),
-    Hate:     parse(process.env.MODERATION_THRESHOLD_HATE,     4),
-    SelfHarm: parse(process.env.MODERATION_THRESHOLD_SELFHARM, 4),
+    Sexual:   env.MODERATION_THRESHOLD_SEXUAL,
+    Violence: env.MODERATION_THRESHOLD_VIOLENCE,
+    Hate:     env.MODERATION_THRESHOLD_HATE,
+    SelfHarm: env.MODERATION_THRESHOLD_SELFHARM,
   };
 }
 
 async function checkAzureContentSafety(buffer: Buffer): Promise<ModerationResult> {
-  const endpoint = process.env.AZURE_CONTENT_SAFETY_ENDPOINT;
-  const key = process.env.AZURE_CONTENT_SAFETY_KEY;
+  const endpoint = env.AZURE_CONTENT_SAFETY_ENDPOINT;
+  const key = env.AZURE_CONTENT_SAFETY_KEY;
   if (!endpoint || !key) throw new Error('Azure Content Safety not configured');
 
   const thresholds = getThresholds();

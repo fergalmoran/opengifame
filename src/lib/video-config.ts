@@ -1,8 +1,7 @@
-// Maximum GIF clip length (seconds). Configurable via the NEXT_PUBLIC_GIF_MAX_DURATION
-// env var so it can be tuned per-deployment without a code change; falls back to 30.
+import {env} from '@/env';
+
 function resolveMaxGifDuration(): number {
-  const parsed = Number(process.env.NEXT_PUBLIC_GIF_MAX_DURATION);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 120;
+  return env.NEXT_PUBLIC_GIF_MAX_DURATION;
 }
 
 // Video processing configuration
