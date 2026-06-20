@@ -7,6 +7,8 @@ import {desc, eq} from "drizzle-orm";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {UsersTab} from "@/components/admin/users-tab";
 import {ReportsTab} from "@/components/admin/reports-tab";
+import {SettingsTab} from "@/components/admin/settings-tab";
+import {getModerationThresholds} from "@/lib/site-settings";
 
 export default async function AdminPage() {
   const session = await getServerAuthSession();
@@ -15,7 +17,7 @@ export default async function AdminPage() {
     redirect("/");
   }
 
-  const [allUsers, allReports] = await Promise.all([
+  const [allUsers, allReports, thresholds] = await Promise.all([
     db.select({
       id: users.id,
       name: users.name,
@@ -43,6 +45,8 @@ export default async function AdminPage() {
       .leftJoin(images, eq(reports.imageId, images.id))
       .leftJoin(users, eq(reports.reporterId, users.id))
       .orderBy(desc(reports.createdAt)),
+
+    getModerationThresholds(),
   ]);
 
   const pendingCount = allReports.filter(r => !r.reviewed).length;
@@ -61,12 +65,16 @@ export default async function AdminPage() {
               </span>
             )}
           </TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="users">
           <UsersTab users={allUsers} currentUserId={session.user.id}/>
         </TabsContent>
         <TabsContent value="reports">
           <ReportsTab reports={allReports as Parameters<typeof ReportsTab>[0]["reports"]}/>
+        </TabsContent>
+        <TabsContent value="settings">
+          <SettingsTab thresholds={thresholds}/>
         </TabsContent>
       </Tabs>
     </div>

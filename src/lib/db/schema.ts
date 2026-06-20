@@ -118,6 +118,12 @@ export const votes = pgTable(
   }
 );
 
+export const siteSettings = pgTable('site_settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const reports = pgTable('reports', {
   id: uuid('id').defaultRandom().primaryKey(),
   imageId: uuid('image_id')

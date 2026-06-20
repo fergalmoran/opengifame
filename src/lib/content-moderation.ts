@@ -1,4 +1,5 @@
 import {env} from '@/env';
+import {getModerationThresholds} from '@/lib/site-settings';
 
 type Likelihood = 'UNKNOWN' | 'VERY_UNLIKELY' | 'UNLIKELY' | 'POSSIBLE' | 'LIKELY' | 'VERY_LIKELY';
 
@@ -43,25 +44,15 @@ async function checkGoogleVision(buffer: Buffer): Promise<ModerationResult | nul
   return { blocked: false };
 }
 
-function getThresholds() {
-  return {
-    Sexual:   env.MODERATION_THRESHOLD_SEXUAL,
-    Violence: env.MODERATION_THRESHOLD_VIOLENCE,
-    Hate:     env.MODERATION_THRESHOLD_HATE,
-    SelfHarm: env.MODERATION_THRESHOLD_SELFHARM,
-  };
-}
-
 async function checkAzureContentSafety(buffer: Buffer): Promise<ModerationResult> {
   const endpoint = env.AZURE_CONTENT_SAFETY_ENDPOINT;
   const key = env.AZURE_CONTENT_SAFETY_KEY;
   if (!endpoint || !key) throw new Error('Azure Content Safety not configured');
 
-  const thresholds = getThresholds();
+  const thresholds = await getModerationThresholds();
 
-  // Only request categories that aren't fully disabled (threshold > 6 would mean never block).
   const activeCategories = (Object.keys(thresholds) as Array<keyof typeof thresholds>)
-    .filter(cat => thresholds[cat] <= 6);
+    .filter(cat => thresholds[cat] !== 'allow');
 
   const res = await fetch(
     `${endpoint.replace(/\/$/, '')}/contentsafety/image:analyze?api-version=2024-09-01`,
@@ -84,7 +75,10 @@ async function checkAzureContentSafety(buffer: Buffer): Promise<ModerationResult
   const data = await res.json();
 
   const flagged = (data.categoriesAnalysis as Array<{ category: string; severity: number }>)
-    .filter(c => c.severity >= (thresholds[c.category as keyof typeof thresholds] ?? 4));
+    .filter(c => {
+      const threshold = thresholds[c.category as keyof typeof thresholds];
+      return threshold !== 'allow' && c.severity >= threshold;
+    });
 
   if (flagged.length > 0) {
     return {

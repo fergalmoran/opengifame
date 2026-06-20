@@ -7,6 +7,7 @@ import {getServerAuthSession} from "@/lib/server-auth";
 import {hasPermission, Permission} from "@/lib/permissions";
 import {rename, mkdir} from "fs/promises";
 import {join} from "path";
+import {setModerationThreshold, type ModerationThresholds, type AzureThreshold} from "@/lib/site-settings";
 
 export async function updateUserPermissions(userId: string, permissions: number) {
   const session = await getServerAuthSession();
@@ -15,6 +16,17 @@ export async function updateUserPermissions(userId: string, permissions: number)
   }
 
   await db.update(users).set({permissions}).where(eq(users.id, userId));
+}
+
+export async function updateModerationThreshold(
+  category: keyof ModerationThresholds,
+  value: AzureThreshold | 'allow',
+) {
+  const session = await getServerAuthSession();
+  if (!session || !hasPermission(session.user.permissions, Permission.Admin)) {
+    throw new Error('Unauthorized');
+  }
+  await setModerationThreshold(category, value);
 }
 
 export async function dismissReport(reportId: string) {
