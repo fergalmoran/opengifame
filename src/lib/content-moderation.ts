@@ -41,10 +41,29 @@ async function checkGoogleVision(buffer: Buffer): Promise<ModerationResult | nul
   return { blocked: false };
 }
 
+function getThresholds() {
+  const parse = (env: string | undefined, fallback: number) => {
+    const n = parseInt(env ?? '', 10);
+    return [0, 2, 4, 6].includes(n) ? n : fallback;
+  };
+  return {
+    Sexual:   parse(process.env.MODERATION_THRESHOLD_SEXUAL,   2),
+    Violence: parse(process.env.MODERATION_THRESHOLD_VIOLENCE, 4),
+    Hate:     parse(process.env.MODERATION_THRESHOLD_HATE,     4),
+    SelfHarm: parse(process.env.MODERATION_THRESHOLD_SELFHARM, 4),
+  };
+}
+
 async function checkAzureContentSafety(buffer: Buffer): Promise<ModerationResult> {
   const endpoint = process.env.AZURE_CONTENT_SAFETY_ENDPOINT;
   const key = process.env.AZURE_CONTENT_SAFETY_KEY;
   if (!endpoint || !key) throw new Error('Azure Content Safety not configured');
+
+  const thresholds = getThresholds();
+
+  // Only request categories that aren't fully disabled (threshold > 6 would mean never block).
+  const activeCategories = (Object.keys(thresholds) as Array<keyof typeof thresholds>)
+    .filter(cat => thresholds[cat] <= 6);
 
   const res = await fetch(
     `${endpoint.replace(/\/$/, '')}/contentsafety/image:analyze?api-version=2024-09-01`,
@@ -56,7 +75,7 @@ async function checkAzureContentSafety(buffer: Buffer): Promise<ModerationResult
       },
       body: JSON.stringify({
         image: { content: buffer.toString('base64') },
-        categories: ['Sexual', 'Violence', 'Hate', 'SelfHarm'],
+        categories: activeCategories,
         outputType: 'FourSeverityLevels',
       }),
     }
@@ -65,8 +84,9 @@ async function checkAzureContentSafety(buffer: Buffer): Promise<ModerationResult
   if (!res.ok) throw new Error(`Azure Content Safety HTTP ${res.status}`);
 
   const data = await res.json();
+
   const flagged = (data.categoriesAnalysis as Array<{ category: string; severity: number }>)
-    .filter(c => c.severity >= 2);
+    .filter(c => c.severity >= (thresholds[c.category as keyof typeof thresholds] ?? 4));
 
   if (flagged.length > 0) {
     return {

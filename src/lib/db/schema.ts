@@ -118,6 +118,19 @@ export const votes = pgTable(
   }
 );
 
+export const reports = pgTable('reports', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  imageId: uuid('image_id')
+    .notNull()
+    .references(() => images.id, {onDelete: 'cascade'}),
+  reason: text('reason').notNull(),
+  details: text('details'),
+  reporterIp: text('reporter_ip'),
+  reporterId: text('reporter_id').references(() => users.id, {onDelete: 'set null'}),
+  reviewed: boolean('reviewed').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const comments = pgTable('comments', {
   id: uuid('id').defaultRandom().primaryKey(),
   content: text('content').notNull(),

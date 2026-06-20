@@ -11,6 +11,7 @@ import {EditableTitle} from '@/components/editable-title';
 import {EditImageDialog} from '@/components/edit-image-dialog';
 import {DeleteImageButton} from '@/components/delete-image-button';
 import {VotingButtons} from '@/components/voting-buttons';
+import {ReportImageButton} from '@/components/report-image-button';
 import {getServerAuthSession} from '@/lib/server-auth';
 
 interface ImagePageProps {
@@ -52,6 +53,7 @@ export default async function ImagePage({params}: ImagePageProps) {
                 imageId={image.id}
                 imageOwnerId={image.uploadedBy}
               />
+              <ReportImageButton imageId={image.id} />
             </div>
           </div>
         </CardHeader>

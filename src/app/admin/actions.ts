@@ -1,7 +1,7 @@
 "use server";
 
 import {db} from "@/lib/db";
-import {users, images} from "@/lib/db/schema";
+import {users, images, reports} from "@/lib/db/schema";
 import {eq} from "drizzle-orm";
 import {getServerAuthSession} from "@/lib/server-auth";
 import {hasPermission, Permission} from "@/lib/permissions";
@@ -15,6 +15,14 @@ export async function updateUserPermissions(userId: string, permissions: number)
   }
 
   await db.update(users).set({permissions}).where(eq(users.id, userId));
+}
+
+export async function dismissReport(reportId: string) {
+  const session = await getServerAuthSession();
+  if (!session || !hasPermission(session.user.permissions, Permission.Admin)) {
+    throw new Error("Unauthorized");
+  }
+  await db.update(reports).set({reviewed: true}).where(eq(reports.id, reportId));
 }
 
 export async function deleteUser(userId: string) {

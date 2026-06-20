@@ -7,6 +7,7 @@ import {Calendar, MessageCircle} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {VotingButtons} from './voting-buttons';
+import {ReportImageButton} from './report-image-button';
 import {formatHumanDate} from '@/lib/date-utils';
 
 interface ImageCardProps {
@@ -97,6 +98,7 @@ export function ImageCard({
                 {commentCount}
               </Link>
             </Button>
+            <ReportImageButton imageId={id}/>
           </div>
         </div>
 
